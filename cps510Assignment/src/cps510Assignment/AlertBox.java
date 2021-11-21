@@ -19,7 +19,7 @@ public class AlertBox {
 		VBox x = new VBox(10);
 		x.getChildren().addAll(label1, button1);
 		x.setAlignment(Pos.CENTER);
-		Scene scene1 = new Scene(x, 200, 80);
+		Scene scene1 = new Scene(x, 250, 80);
 		window.setScene(scene1);
 		window.showAndWait();
 	}

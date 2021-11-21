@@ -11,13 +11,16 @@ import javafx.stage.Stage;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
 import javafx.scene.layout.*;
 
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.time.ZoneId;
 import java.sql.ResultSet;
 import java.util.Properties;
 
@@ -45,7 +48,7 @@ public class Main extends Application implements EventHandler<ActionEvent> {
 	final static int WIN_WIDTH = 400, WIN_HEIGHT = 350;
 	static Connection conn1 = null;
 	Stage window;
-	Scene entryPortal, newUser, login, adminLogin, homePage, practiceQueries;
+	Scene entryPortal, newUser, login, adminLogin, homePage, adminHomePage, practiceQueries;
 	
 	/* entryPortal components */
 	GridPane entryGrid;
@@ -53,19 +56,30 @@ public class Main extends Application implements EventHandler<ActionEvent> {
 	Button epNewUserButton, epLoginButton, epAdminLoginButton;
 	
 	/* newUser components */
-	Label tempLabel1;
-	Button tempButton1;
+//	Label tempLabel1;
+//	Button tempButton1;
+	Label firstNameLabel, lastNameLabel, DOBLabel, emailLabel, phoneLabel, usernameLabel, passwordLabel;
+	TextField firstNameText, lastNameText, emailText, phoneText, usernameText;
+	DatePicker dateOfBirth;
+	PasswordField passwordText;
+	Button submitButton, clearButton, newUserBackButton;
 	
 	/* adminLogin components */
-	Label tempLabel2;
-	Button tempButton2;
+//	Label tempLabel2;
+//	Button tempButton2;
+	GridPane adminLoginGrid;
+	Label adminUsername, adminPassword;
+	TextField adminUsernameText;
+	PasswordField adminPasswordText;
+	Button adminLoginButton, adminReturnToEPButton;
 	
 	
 	/* Login scene components */
 	GridPane loginGrid;
 	Label username, password;
-	TextField username_text, password_text;
-	Button login_button;
+	TextField username_text;
+	PasswordField password_text;
+	Button login_button, return_to_ep_button;
 	
 	/* homepage scene components */
 	GridPane homePageGrid;
@@ -86,12 +100,13 @@ public class Main extends Application implements EventHandler<ActionEvent> {
     public void start(Stage primaryStage) throws Exception{
     	window = primaryStage;
         window.setTitle("Blockbuster 2");
-        tempLabel1 = new Label("Nothing to see here.");
-        tempButton1 = new Button("Return");
-        tempButton1.setOnAction(e -> window.setScene(entryPortal));
-        tempLabel2 = new Label("Nothing to see here.");
-        tempButton2 = new Button("Return");
-        tempButton2.setOnAction(e -> window.setScene(entryPortal));
+        window.getIcons().add(new Image("icon.png"));
+//        tempLabel1 = new Label("Nothing to see here.");
+//        tempButton1 = new Button("Return");
+//        tempButton1.setOnAction(e -> window.setScene(entryPortal));
+//        tempLabel2 = new Label("Nothing to see here.");
+//        tempButton2 = new Button("Return");
+//        tempButton2.setOnAction(e -> window.setScene(entryPortal));
         
         // SCENE entryPortal
         entryGrid = new GridPane();
@@ -116,17 +131,92 @@ public class Main extends Application implements EventHandler<ActionEvent> {
         entryGrid.getChildren().addAll(epNewUserLabel, epNewUserButton, epLoginLabel, epLoginButton, epAdminLoginLabel, epAdminLoginButton);
         entryPortal = new Scene(entryGrid, WIN_WIDTH, WIN_HEIGHT);
         
-        // SCENE newUser TEMP
-        VBox newUserLayout = new VBox(10);
-        newUserLayout.getChildren().addAll(tempLabel1, tempButton1);
-        newUserLayout.setAlignment(Pos.CENTER);
+        // SCENE newUser
+        GridPane newUserLayout = new GridPane();
+        newUserLayout.setPadding(new Insets(20,20,20,20));
+        newUserLayout.setVgap(15);
+        newUserLayout.setHgap(15);
+        firstNameLabel = new Label("First Name: ");
+        lastNameLabel = new Label("Last Name: ");
+        DOBLabel = new Label("Date of Birth: ");
+        emailLabel = new Label("Email: ");
+        phoneLabel = new Label("Phone Number: ");
+        usernameLabel = new Label("Username: ");
+        passwordLabel = new Label("Password: ");
+        firstNameText = new TextField();
+        lastNameText = new TextField();
+        dateOfBirth = new DatePicker();
+        emailText = new TextField();
+        emailText.setPromptText("example@domain.com");
+        phoneText = new TextField();
+        phoneText.setPromptText("1234567890");
+        usernameText = new TextField();
+        passwordText = new PasswordField();
+        submitButton = new Button("Submit");
+        submitButton.setOnAction(e -> {
+        	e.consume();
+        	if (validateNewUser(firstNameText, lastNameText, dateOfBirth, emailText, phoneText, usernameText, passwordText)) {
+        		window.setScene(login);
+        		AlertBox.display("Success", "Please log in.");
+        	} else {
+        		AlertBox.display("Failure", "Please try again.");
+        	}
+        });
+        clearButton = new Button("Clear");
+        clearButton.setOnAction(e -> System.out.println("Clear"));
+        newUserBackButton = new Button("Back");
+        newUserBackButton.setOnAction(e -> window.setScene(entryPortal));   
+        GridPane.setConstraints(firstNameLabel, 0, 0);
+        GridPane.setConstraints(lastNameLabel, 0, 1);
+        GridPane.setConstraints(DOBLabel, 0, 2);
+        GridPane.setConstraints(emailLabel, 0, 3);
+        GridPane.setConstraints(phoneLabel, 0, 4);
+        GridPane.setConstraints(usernameLabel, 0, 5);
+        GridPane.setConstraints(passwordLabel, 0, 6);     
+        GridPane.setConstraints(firstNameText, 1, 0);
+        GridPane.setConstraints(lastNameText, 1, 1);
+        GridPane.setConstraints(dateOfBirth, 1, 2);
+        GridPane.setConstraints(emailText, 1, 3);
+        GridPane.setConstraints(phoneText, 1, 4);
+        GridPane.setConstraints(usernameText, 1, 5);
+        GridPane.setConstraints(passwordText, 1, 6);    
+        GridPane.setConstraints(submitButton, 1, 7);
+        GridPane.setConstraints(clearButton, 0, 7);
+        GridPane.setConstraints(newUserBackButton, 2, 7);  
+        newUserLayout.getChildren().addAll(firstNameLabel, lastNameLabel, DOBLabel, emailLabel, phoneLabel, usernameLabel, passwordLabel, firstNameText, lastNameText, dateOfBirth, emailText, phoneText, usernameText, passwordText, submitButton, clearButton, newUserBackButton);
+//        newUserLayout.setAlignment(Pos.CENTER);
 		newUser = new Scene(newUserLayout, WIN_WIDTH, WIN_HEIGHT);
         
-        // SCENE adminLogin TEMP
-        VBox adminLoginLayout = new VBox(10);
-        adminLoginLayout.getChildren().addAll(tempLabel2, tempButton2);
-        adminLoginLayout.setAlignment(Pos.CENTER);
-		adminLogin = new Scene(adminLoginLayout, WIN_WIDTH, WIN_HEIGHT);
+        // SCENE adminLogin 
+        GridPane adminLoginLayout = new GridPane();
+        adminLoginLayout.setPadding(new Insets(20,20,20,20));
+        adminLoginLayout.setVgap(15);
+        adminLoginLayout.setHgap(15);
+        adminUsername = new Label("Username: ");
+        adminPassword = new Label("Password: ");
+        adminUsernameText = new TextField();
+        adminUsernameText.setPromptText("username");
+        adminPasswordText = new PasswordField();
+        adminPasswordText.setPromptText("password");
+        adminLoginButton = new Button("Log In");
+        adminLoginButton.setOnAction(e -> {
+        	if (adminUsernameText.getText().equals("adminGroup94") && adminPasswordText.getText().equals("p@ssw0rd")) {
+//        		window.setScene(adminHomePage);
+        		System.out.println("adminLogin success");
+        	} else {
+        		AlertBox.display("Failure", "Please try again.");
+        	}
+        });
+        adminReturnToEPButton = new Button("Back");
+        adminReturnToEPButton.setOnAction(e -> window.setScene(entryPortal));
+        GridPane.setConstraints(adminUsername, 0, 0);
+        GridPane.setConstraints(adminPassword, 0, 1);
+        GridPane.setConstraints(adminUsernameText, 1, 0);
+        GridPane.setConstraints(adminPasswordText, 1, 1);
+        GridPane.setConstraints(adminLoginButton, 1, 2);
+        GridPane.setConstraints(adminReturnToEPButton, 2, 2);
+        adminLoginLayout.getChildren().addAll(adminUsername, adminPassword, adminUsernameText, adminPasswordText, adminLoginButton, adminReturnToEPButton);
+        adminLogin = new Scene(adminLoginLayout, WIN_WIDTH, WIN_HEIGHT);        
         
         // SCENE login
         loginGrid = new GridPane();
@@ -137,7 +227,7 @@ public class Main extends Application implements EventHandler<ActionEvent> {
         password = new Label("Password: ");
         username_text = new TextField();
         username_text.setPromptText("username");
-        password_text = new TextField();
+        password_text = new PasswordField();
         password_text.setPromptText("password");
         login_button = new Button("Log In");
         login_button.setOnAction(e -> {
@@ -146,6 +236,8 @@ public class Main extends Application implements EventHandler<ActionEvent> {
         		window.setScene(homePage);
         	}
         });
+        return_to_ep_button = new Button("Back");
+        return_to_ep_button.setOnAction(e -> window.setScene(entryPortal));
         Button buttonNew = new Button("Bypass");
         buttonNew.setOnAction(e -> window.setScene(homePage));
         GridPane.setConstraints(username, 0, 0);
@@ -153,8 +245,9 @@ public class Main extends Application implements EventHandler<ActionEvent> {
         GridPane.setConstraints(username_text, 1, 0);
         GridPane.setConstraints(password_text, 1, 1);
         GridPane.setConstraints(login_button, 1, 2);
-        GridPane.setConstraints(buttonNew, 2, 2);
-        loginGrid.getChildren().addAll(username, password, username_text, password_text, login_button, buttonNew);
+        GridPane.setConstraints(buttonNew, 3, 2);
+        GridPane.setConstraints(return_to_ep_button, 2, 2);
+        loginGrid.getChildren().addAll(username, password, username_text, password_text, login_button, return_to_ep_button, buttonNew);
         login = new Scene(loginGrid, WIN_WIDTH, WIN_HEIGHT);
         
         // SCENE homePage
@@ -188,6 +281,48 @@ public class Main extends Application implements EventHandler<ActionEvent> {
         window.setScene(entryPortal);
         window.show();
     }
+
+	private boolean validateNewUser(TextField firstName, TextField lastName, DatePicker dateOfBirth, TextField email, TextField phone, TextField username, PasswordField password) {
+		boolean result = false;
+		int prevTopUID = 0, newTopUID;
+		try (Statement getTopUIDStmt = conn1.createStatement()) {
+			String getTopUIDQuery = "SELECT MAX(userID) AS maxUID FROM store_user";
+			ResultSet getTopUIDResult = getTopUIDStmt.executeQuery(getTopUIDQuery);
+			if (getTopUIDResult.next()) {
+				prevTopUID = getTopUIDResult.getInt("maxUID");
+			}
+			} catch (SQLException e) {
+				System.out.println(e.getErrorCode());
+			} 
+		newTopUID = prevTopUID + 1;
+		PreparedStatement newUserStmt = null;
+		   try {
+			   newUserStmt = conn1.prepareStatement("INSERT INTO store_user (userID, email, username, user_password, first_name, last_name, phone_number, date_of_birth) values (?, ?, ?, ?, ?, ?, ?, ?)");
+			   newUserStmt.setInt(1, newTopUID);
+			   newUserStmt.setString(2, email.getText());
+			   newUserStmt.setString(3, username.getText());
+			   newUserStmt.setString(4, password.getText());
+			   newUserStmt.setString(5, firstName.getText());
+			   newUserStmt.setString(6, lastName.getText());
+			   newUserStmt.setLong(7, Long.parseLong(phone.getText()));
+			   java.util.Date date = java.util.Date.from(dateOfBirth.getValue().atStartOfDay(ZoneId.systemDefault()).toInstant());
+			   java.sql.Date sqlDate = new java.sql.Date(date.getTime());
+			   newUserStmt.setDate(8, sqlDate);
+			   newUserStmt.executeUpdate();
+			   result = true;
+		   } catch (SQLException e) {
+			   e.printStackTrace();
+		   }
+		   finally {
+		      try {
+		         if (newUserStmt != null) { newUserStmt.close(); }
+		      }
+		      catch (Exception e) {
+		         // log this error
+		      }
+		   }
+		return result;
+	}
 
 	public static void main(String[] args) {
         try {
