@@ -12,8 +12,10 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 
+import java.io.FileInputStream;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.DriverManager;
@@ -45,7 +47,7 @@ import java.util.Properties;
 public class Main extends Application implements EventHandler<ActionEvent> {
 
 	/* window setup */
-	final static int WIN_WIDTH = 400, WIN_HEIGHT = 350;
+	final static int WIN_WIDTH = 800, WIN_HEIGHT = 600;
 	static Connection conn1 = null;
 	Stage window;
 	Scene entryPortal, newUser, login, adminLogin, homePage, adminHomePage, practiceQueries;
@@ -82,7 +84,9 @@ public class Main extends Application implements EventHandler<ActionEvent> {
 	Button login_button, return_to_ep_button;
 	
 	/* homepage scene components */
-	GridPane homePageGrid;
+	GridPane hpGrid;
+	ScrollPane hpScrollPane_Grid;
+	HBox hpHBox_ScrollPane_Grid;
 	Label hpLabel1;
 	Button hpButton1;
 	
@@ -163,7 +167,15 @@ public class Main extends Application implements EventHandler<ActionEvent> {
         	}
         });
         clearButton = new Button("Clear");
-        clearButton.setOnAction(e -> System.out.println("Clear"));
+        clearButton.setOnAction(e -> {
+        	firstNameText.clear();
+        	lastNameText.clear();
+        	dateOfBirth.setValue(null);
+        	emailText.clear();
+        	phoneText.clear();
+        	usernameText.clear();
+        	passwordText.clear();
+        });
         newUserBackButton = new Button("Back");
         newUserBackButton.setOnAction(e -> window.setScene(entryPortal));   
         GridPane.setConstraints(firstNameLabel, 0, 0);
@@ -251,17 +263,55 @@ public class Main extends Application implements EventHandler<ActionEvent> {
         login = new Scene(loginGrid, WIN_WIDTH, WIN_HEIGHT);
         
         // SCENE homePage
-        homePageGrid = new GridPane();
-        homePageGrid.setPadding(new Insets(20,20,20,20));
-        homePageGrid.setVgap(15);
-        homePageGrid.setHgap(15);
+        /*
+	ScrollPane hpScrollPane_Grid;
+	HBox hpHBox_ScrollPane_Grid;*/
+        hpGrid = new GridPane();
+        hpGrid.setPadding(new Insets(20,20,20,20));
+        hpGrid.setVgap(15);
+        hpGrid.setHgap(15);
         hpLabel1 = new Label("Try some queries in another page:");
         hpButton1 = new Button("Click here.");
         hpButton1.setOnAction(e -> window.setScene(practiceQueries));
-        GridPane.setConstraints(hpLabel1, 0, 0);
-        GridPane.setConstraints(hpButton1, 0, 1);
-        homePageGrid.getChildren().addAll(hpLabel1, hpButton1);
-        homePage = new Scene(homePageGrid, WIN_WIDTH, WIN_HEIGHT);
+        hpScrollPane_Grid = new ScrollPane();
+        hpScrollPane_Grid.setPannable(true);
+        hpScrollPane_Grid.hbarPolicyProperty().setValue(ScrollPane.ScrollBarPolicy.NEVER);
+        hpScrollPane_Grid.vbarPolicyProperty().setValue(ScrollPane.ScrollBarPolicy.NEVER);
+        hpHBox_ScrollPane_Grid = new HBox(50);
+        int videoID, release_year;
+        String title, thumbnailFilepath;
+        Label titleLabel, release_yearLabel;
+        Image thumbnail;
+        ImageView imageView;
+        try (Statement defaultDisplayStmt = conn1.createStatement()) {
+			String defaultDisplayQuery = "SELECT videoID, title, release_year FROM video ORDER BY videoID";
+			ResultSet getTopUIDResult = defaultDisplayStmt.executeQuery(defaultDisplayQuery);
+			while (getTopUIDResult.next()) {
+		        VBox currVBox = new VBox(7);
+				videoID = getTopUIDResult.getInt("videoID");
+				title = getTopUIDResult.getString("title");
+				release_year = getTopUIDResult.getInt("release_year");
+				titleLabel = new Label(title);
+				release_yearLabel = new Label(String.valueOf(release_year));
+				thumbnailFilepath = "/thumbnails/THUMBNAIL_" + String.valueOf(videoID) + ".jpg";
+				thumbnail = new Image(thumbnailFilepath);
+				imageView = new ImageView(thumbnail);
+			    imageView.setPreserveRatio(true); 
+			    imageView.setFitHeight(455);
+				currVBox.setAlignment(Pos.CENTER);
+				currVBox.getChildren().addAll(imageView, titleLabel, release_yearLabel);
+				hpHBox_ScrollPane_Grid.getChildren().add(currVBox);
+			}
+			} catch (SQLException e) {
+				System.out.println(e.getErrorCode());
+			}
+        hpScrollPane_Grid.setContent(hpHBox_ScrollPane_Grid);
+        hpGrid.add(hpLabel1, 0, 0);
+        hpGrid.add(hpButton1, 1, 0);
+        hpGrid.add(hpScrollPane_Grid, 0, 1, 2, 1);
+//        hpGrid.getChildren().addAll(hpLabel1, hpButton1, hpScrollPane_Grid);
+        homePage = new Scene(hpGrid, WIN_WIDTH, WIN_HEIGHT);
+        hpScrollPane_Grid.setStyle("-fx-focus-color: transparent;");
         
         
         // SCENE practiceQueries
