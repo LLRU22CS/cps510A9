@@ -376,7 +376,10 @@ public class Main extends Application implements EventHandler<ActionEvent> {
 
 	public static void main(String[] args) {
         try {
-            String dbURL1 = "jdbc:oracle:thin:lloewen/10120860@oracle.scs.ryerson.ca:1521:orcl";  // that is school Oracle database and you can only use it in the labs
+            String dbUsername = "";
+            String dbPassword = "";
+            
+            String dbURL1 = "jdbc:oracle:thin:" + dbUsername + "/" + dbPassword + "@oracle.scs.ryerson.ca:1521:orcl";  // that is school Oracle database and you can only use it in the labs
 			// String dbURL1 = "jdbc:oracle:thin:username/password@localhost:1521:xe";
 			/* This XE or local database that you installed on your laptop. 1521 is the default port for database, change according to what you used during installation. 
 			xe is the sid, change according to what you setup during installation. */
