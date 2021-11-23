@@ -50,7 +50,7 @@ public class Main extends Application implements EventHandler<ActionEvent> {
 	final static int WIN_WIDTH = 800, WIN_HEIGHT = 600;
 	static Connection conn1 = null;
 	Stage window;
-	Scene entryPortal, newUser, login, adminLogin, homePage, adminHomePage, practiceQueries;
+	Scene entryPortal, newUser, login, adminLogin, homePage, adminHomePage, practiceQueries, videoDetails;
 	
 	/* entryPortal components */
 	GridPane entryGrid;
@@ -58,8 +58,6 @@ public class Main extends Application implements EventHandler<ActionEvent> {
 	Button epNewUserButton, epLoginButton, epAdminLoginButton;
 	
 	/* newUser components */
-//	Label tempLabel1;
-//	Button tempButton1;
 	Label firstNameLabel, lastNameLabel, DOBLabel, emailLabel, phoneLabel, usernameLabel, passwordLabel;
 	TextField firstNameText, lastNameText, emailText, phoneText, usernameText;
 	DatePicker dateOfBirth;
@@ -67,8 +65,6 @@ public class Main extends Application implements EventHandler<ActionEvent> {
 	Button submitButton, clearButton, newUserBackButton;
 	
 	/* adminLogin components */
-//	Label tempLabel2;
-//	Button tempButton2;
 	GridPane adminLoginGrid;
 	Label adminUsername, adminPassword;
 	TextField adminUsernameText;
@@ -90,6 +86,15 @@ public class Main extends Application implements EventHandler<ActionEvent> {
 	Label hpLabel1;
 	Button hpButton1;
 	
+	/* videoDetails scene components */
+	GridPane vdGrid;
+//    int videoID, release_year;
+//    String title, thumbnailFilepath;
+//    Label titleLabel, release_yearLabel, videoIDLabel;
+//    Image thumbnail;
+//    ImageView imageView;
+		
+	
 	/* Practice scene components */
 	Button button_runQuery, button_swapQuery, button_return_home;
 	static int query_val = 0;	//max size(queries[])
@@ -105,12 +110,6 @@ public class Main extends Application implements EventHandler<ActionEvent> {
     	window = primaryStage;
         window.setTitle("Blockbuster 2");
         window.getIcons().add(new Image("icon.png"));
-//        tempLabel1 = new Label("Nothing to see here.");
-//        tempButton1 = new Button("Return");
-//        tempButton1.setOnAction(e -> window.setScene(entryPortal));
-//        tempLabel2 = new Label("Nothing to see here.");
-//        tempButton2 = new Button("Return");
-//        tempButton2.setOnAction(e -> window.setScene(entryPortal));
         
         // SCENE entryPortal
         entryGrid = new GridPane();
@@ -263,9 +262,6 @@ public class Main extends Application implements EventHandler<ActionEvent> {
         login = new Scene(loginGrid, WIN_WIDTH, WIN_HEIGHT);
         
         // SCENE homePage
-        /*
-	ScrollPane hpScrollPane_Grid;
-	HBox hpHBox_ScrollPane_Grid;*/
         hpGrid = new GridPane();
         hpGrid.setPadding(new Insets(20,20,20,20));
         hpGrid.setVgap(15);
@@ -280,7 +276,7 @@ public class Main extends Application implements EventHandler<ActionEvent> {
         hpHBox_ScrollPane_Grid = new HBox(50);
         int videoID, release_year;
         String title, thumbnailFilepath;
-        Label titleLabel, release_yearLabel;
+        Label titleLabel, release_yearLabel, videoIDLabel;
         Image thumbnail;
         ImageView imageView;
         try (Statement defaultDisplayStmt = conn1.createStatement()) {
@@ -293,13 +289,20 @@ public class Main extends Application implements EventHandler<ActionEvent> {
 				release_year = getTopUIDResult.getInt("release_year");
 				titleLabel = new Label(title);
 				release_yearLabel = new Label(String.valueOf(release_year));
+				videoIDLabel = new Label(String.valueOf(videoID));
+				videoIDLabel.setVisible(false);
 				thumbnailFilepath = "/thumbnails/THUMBNAIL_" + String.valueOf(videoID) + ".jpg";
 				thumbnail = new Image(thumbnailFilepath);
 				imageView = new ImageView(thumbnail);
 			    imageView.setPreserveRatio(true); 
 			    imageView.setFitHeight(455);
 				currVBox.setAlignment(Pos.CENTER);
-				currVBox.getChildren().addAll(imageView, titleLabel, release_yearLabel);
+				currVBox.getChildren().addAll(imageView, titleLabel, release_yearLabel, videoIDLabel);
+				currVBox.setPickOnBounds(true);
+				currVBox.setOnMouseClicked(e -> {
+		            Data.videoID = Integer.parseInt(((Label)currVBox.getChildren().get(3)).getText());
+		            Data.printData();
+		        });
 				hpHBox_ScrollPane_Grid.getChildren().add(currVBox);
 			}
 			} catch (SQLException e) {
@@ -376,10 +379,8 @@ public class Main extends Application implements EventHandler<ActionEvent> {
 
 	public static void main(String[] args) {
         try {
-            String dbURL1 = "jdbc:oracle:thin:lloewen/10120860@oracle.scs.ryerson.ca:1521:orcl";  // that is school Oracle database and you can only use it in the labs
+            String dbURL1 = "jdbc:oracle:thin:lloewen/10120860@oracle.scs.ryerson.ca:1521:orcl";
 			// String dbURL1 = "jdbc:oracle:thin:username/password@localhost:1521:xe";
-			/* This XE or local database that you installed on your laptop. 1521 is the default port for database, change according to what you used during installation. 
-			xe is the sid, change according to what you setup during installation. */
 			conn1 = DriverManager.getConnection(dbURL1);
             if (conn1 != null) {
                 System.out.println("Connected with connection #1");
