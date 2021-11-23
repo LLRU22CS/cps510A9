@@ -64,7 +64,7 @@ public class UnixScreen extends Screen {
         Button exitButton = new Button("Exit");
         
         exitButton.setOnAction(e -> this.switchScene("EntryPortalScreen.java"));
-        dropTablesButton.setOnAction(e -> System.out.println("drop tables"));
+        dropTablesButton.setOnAction(e -> dropTables());
         createTablesButton.setOnAction(e -> System.out.println("create tables"));
         populateTablesButton.setOnAction(e -> System.out.println("populate tables"));
         queryTablesButton.setOnAction(e -> System.out.println("query tables"));
@@ -77,6 +77,53 @@ public class UnixScreen extends Screen {
         unixGrid.getChildren().addAll(dropTablesButton, createTablesButton, populateTablesButton, queryTablesButton, exitButton);
         
         return new Scene(unixGrid, WIN_WIDTH, WIN_HEIGHT);
+    }
+    
+    private void dropTables() {
+        String[] queries = {
+            "drop TABLE ACTORS;",
+            "drop TABLE FILE_LOCATIONS;",
+            "drop TABLE VIDEO_CATEGORIES;",
+            "drop TABLE RENTAL_DURATION;",
+            "drop TABLE CATEGORIES;",
+            "drop TABLE SHOPPING_CART;",
+            "drop TABLE WISHLIST;",
+            "drop TABLE REVIEW;",
+            "drop TABLE USER_LIBRARY_R1;",
+            "drop TABLE USER_LIBRARY_R2;",
+            "drop TABLE USER_TRANSACTION;",
+            "drop TABLE PAYMENT_METHOD;",
+            "drop TABLE VIDEO;",
+            "drop TABLE STORE_USER;",
+            "drop VIEW TOTAL_POINTS;",
+            "drop VIEW ALL_SUCCESSFUL_TRANSACTIONS;",
+            "drop VIEW DISCOUNTED_WEEKEND_RENTALS;",
+            "drop VIEW GREAT_DEALS_TO_OWN;",
+            "drop VIEW CARD_EXPIRED_TRANSACTIONS;"
+        };
+        
+        try (Statement stmt = conn1.createStatement()) {
+            
+            String query = "drop TABLE ACTORS;";
+            stmt.executeQuery(query);
+            
+        } catch (SQLException e) {
+            System.out.println(e.getErrorCode());
+        }
+    }
+    
+    private void createTables() {
+        String[] queries = {
+            
+        };
+    }
+    
+    private void populateTables() {
+        
+    }
+    
+    private void queryTables() {
+        
     }
     
 }
