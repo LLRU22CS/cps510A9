@@ -69,7 +69,7 @@ public class HomepageScreen extends Screen {
         HBox hpHBox_ScrollPane_Grid = new HBox(50);
         int videoID, release_year;
         String title, thumbnailFilepath;
-        Label titleLabel, release_yearLabel;
+        Label titleLabel, release_yearLabel, videoIDLabel;
         Image thumbnail;
         ImageView imageView;
         try (Statement defaultDisplayStmt = conn1.createStatement()) {
@@ -83,13 +83,21 @@ public class HomepageScreen extends Screen {
                 release_year = getTopUIDResult.getInt("release_year");
                 titleLabel = new Label(title);
                 release_yearLabel = new Label(String.valueOf(release_year));
+                videoIDLabel = new Label(String.valueOf(videoID));
+                videoIDLabel.setVisible(false);
                 thumbnailFilepath = "/thumbnails/THUMBNAIL_" + String.valueOf(videoID) + ".jpg";
                 thumbnail = new Image(thumbnailFilepath);
                 imageView = new ImageView(thumbnail);
                 imageView.setPreserveRatio(true); 
                 imageView.setFitHeight(455);
                 currVBox.setAlignment(Pos.CENTER);
-                currVBox.getChildren().addAll(imageView, titleLabel, release_yearLabel);
+                
+                currVBox.getChildren().addAll(imageView, titleLabel, release_yearLabel, videoIDLabel);
+				currVBox.setPickOnBounds(true);
+				currVBox.setOnMouseClicked(e -> {
+		            Data.videoID = Integer.parseInt(((Label)currVBox.getChildren().get(3)).getText());
+		            Data.printData();
+		        });
                 hpHBox_ScrollPane_Grid.getChildren().add(currVBox);
             }
         } catch (SQLException e) {

@@ -59,12 +59,6 @@ public class Main extends Application implements EventHandler<ActionEvent> {
     	window = primaryStage;
         window.setTitle("Blockbuster 2");
         window.getIcons().add(new Image("icon.png"));
-//        tempLabel1 = new Label("Nothing to see here.");
-//        tempButton1 = new Button("Return");
-//        tempButton1.setOnAction(e -> window.setScene(entryPortal));
-//        tempLabel2 = new Label("Nothing to see here.");
-//        tempButton2 = new Button("Return");
-//        tempButton2.setOnAction(e -> window.setScene(entryPortal));
 
         // initialize child classes here
         AdminLoginScreen adminLoginScreen = new AdminLoginScreen(window, allScenes);
