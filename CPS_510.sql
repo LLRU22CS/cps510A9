@@ -7,8 +7,8 @@ drop TABLE CATEGORIES_R2;
 drop TABLE SHOPPING_CART;
 drop TABLE WISHLIST;
 drop TABLE REVIEW;
-drop TABLE USER_LIBRARY_R1;
-drop TABLE USER_LIBRARY_R2;
+drop TABLE USER_LIBRARY_R2 CASCADE CONSTRAINTS; 
+drop TABLE USER_LIBRARY_R1 CASCADE CONSTRAINTS; 
 drop TABLE USER_TRANSACTION;
 drop TABLE PAYMENT_METHOD;
 drop TABLE VIDEO_R1;
@@ -343,11 +343,11 @@ INSERT INTO USER_LIBRARY_R2 VALUES (100,101,101);
 INSERT INTO USER_LIBRARY_R2 VALUES (101,100,100);
 
 -- all video titles
-SELECT title FROM VIDEO;
+SELECT title FROM VIDEO_R1;
 
 -- actors from Inglorious Basterds
 SELECT actor_first_name, actor_last_name
-    FROM VIDEO v, ACTORS a
+    FROM VIDEO_R1 v, ACTORS a
     WHERE v.videoID = a.videoID
     AND v.title = 'Inglorious Basterds';
     
@@ -360,8 +360,8 @@ SELECT c.category_name, v.title
                     GROUP BY categoryID
                     ORDER BY catcount DESC)
             WHERE ROWNUM = 1) x,
-        VIDEO v,
-        CATEGORIES c,
+        VIDEO_R1 v,
+        CATEGORIES_R1 c,
         VIDEO_CATEGORIES y
     WHERE c.categoryID = x.categoryID
         AND y.categoryID = x.categoryID
@@ -375,18 +375,19 @@ SELECT movies, actor_first_name, actor_last_name
     
 -- view of cheap purchases that can't be rented
 CREATE VIEW GREAT_DEALS_TO_OWN (title, new_low_price) AS
-    (SELECT v.title, v.purchase_price
-        FROM VIDEO v
-        WHERE v.purchase_price < 10
+    (SELECT v1.title, v2.purchase_price
+        FROM VIDEO_R1 v1, VIDEO_R2 v2
+        WHERE v2.purchase_price < 10
+            AND v1.videoID = v2.videoID
             AND NOT EXISTS 
-            (SELECT r.videoID FROM RENTAL_DURATION r WHERE v.videoID = r.videoID)
+            (SELECT r.videoID FROM RENTAL_DURATION r WHERE v1.videoID = r.videoID)
     )
-    ORDER BY v.purchase_price ASC;
+    ORDER BY v2.purchase_price ASC;
 SELECT * FROM GREAT_DEALS_TO_OWN;
 
 -- retreive the file location of the trailers for all the applicable movies in the adventure category
 SELECT v.title, f.file_location 
-    FROM VIDEO v, FILE_LOCATIONS f, VIDEO_CATEGORIES c 
+    FROM VIDEO_R1 v, FILE_LOCATIONS f, VIDEO_CATEGORIES c 
     WHERE v.videoID = c.videoID
     AND c.categoryID = 103
     AND f.videoID = v.videoID
@@ -394,7 +395,7 @@ SELECT v.title, f.file_location
     
 -- retreive the videoID of all the movies in the adventure category that have trailers
 SELECT v.title
-    FROM VIDEO v, VIDEO_CATEGORIES c 
+    FROM VIDEO_R1 v, VIDEO_CATEGORIES c 
     WHERE v.videoID = c.videoID
     AND c.categoryID = 103
     AND EXISTS (
@@ -403,14 +404,14 @@ SELECT v.title
 
 -- the amount of options that a video can be rented for (include 0)
 SELECT v.title, COUNT(r.videoID) as rental_options
-    FROM VIDEO v LEFT JOIN RENTAL_DURATION r ON v.videoID = r.videoID
+    FROM VIDEO_R1 v LEFT JOIN RENTAL_DURATION r ON v.videoID = r.videoID
     GROUP BY r.videoID, v.title
     ORDER BY v.title;
 
 -- view of short-term rentals
 CREATE VIEW DISCOUNTED_WEEKEND_RENTALS (title, nights, slashed_cost) AS
     (SELECT v.title, r.rental_duration, rental_price
-        FROM VIDEO v, RENTAL_DURATION r
+        FROM VIDEO_R1 v, RENTAL_DURATION r
         WHERE v.videoID = r.videoID
             AND r.rental_duration < 3
             AND r.rental_price < 3
@@ -419,25 +420,25 @@ CREATE VIEW DISCOUNTED_WEEKEND_RENTALS (title, nights, slashed_cost) AS
 SELECT * FROM DISCOUNTED_WEEKEND_RENTALS;
 
 -- average purchase price of every movie
-SELECT COUNT(purchase_price) as NUMBER_OF_PURCHASEABLE_MOVIES, AVG(purchase_price) as AVERAGE_PURCHASE_PRICE FROM VIDEO;
+SELECT COUNT(purchase_price) as NUMBER_OF_PURCHASEABLE_MOVIES, AVG(purchase_price) as AVERAGE_PURCHASE_PRICE FROM VIDEO_R2;
 
 -- drama category description and movies
-SELECT category_name, description FROM CATEGORIES WHERE categoryID = 106
+SELECT c2.category_name, c2.description FROM CATEGORIES_R1 c1, CATEGORIES_R2 c2 WHERE c1.categoryID = 106 AND c1.category_name = c2.category_name 
 UNION
-SELECT v.title, v.rating FROM VIDEO v, VIDEO_CATEGORIES c WHERE v.videoID = c.videoID AND c.categoryID = 106;
+SELECT v1.title, v2.rating FROM VIDEO_R1 v1, VIDEO_R2 v2, VIDEO_CATEGORIES c WHERE v1.videoID = c.videoID AND v1.videoID = v2.videoID AND c.categoryID = 106;
 
 -- movies after certain release year
-SELECT title, release_year FROM VIDEO WHERE release_year >= 2000 ORDER BY release_year DESC;
+SELECT title, release_year FROM VIDEO_R1 WHERE release_year >= 2000 ORDER BY release_year DESC;
 
 -- view of distinguished directors
 SELECT v.director, v.title
-    FROM (SELECT COUNT(director) as films_directed, director FROM VIDEO GROUP BY director ORDER BY films_directed DESC) x, VIDEO v
+    FROM (SELECT COUNT(director) as films_directed, director FROM VIDEO_R1 GROUP BY director ORDER BY films_directed DESC) x, VIDEO_R1 v
     WHERE x.films_directed > 1
         AND x.director = v.director;
 
 -- Movies in the wishlist of the userID 100
 SELECT title
-  FROM VIDEO v, WISHLIST w, STORE_USER u
+  FROM VIDEO_R1 v, WISHLIST w, STORE_USER u
   WHERE v.videoID = w.videoID
   AND w.userID = u.userID
   AND w.userID = 100
@@ -467,14 +468,14 @@ WHERE POINTS_EARNED BETWEEN 25 AND 29;
 
 -- Displays video titles that have recieved no reviews yet
 SELECT DISTINCT v.title
-FROM VIDEO v, REVIEW rev
+FROM VIDEO_R1 v, REVIEW rev
 WHERE v.videoID NOT IN 
   (SELECT videoID 
     FROM REVIEW);
 
 -- Displays reviews written for video ID of 101
 SELECT u.username, v.title, rev.rtitle, rev.review, rev.rating
-  FROM REVIEW rev, VIDEO v, STORE_USER u
+  FROM REVIEW rev, VIDEO_R1 v, STORE_USER u
   WHERE rev.userID = u.userID
   AND v.videoID = rev.videoID
   AND rev.videoID = 101
@@ -482,7 +483,7 @@ SELECT u.username, v.title, rev.rtitle, rev.review, rev.rating
 
 --Displays users library of ID 100 in descending order
 SELECT v.title, ul1.rent_own, ul1.rent_duration, ul1.purchase_date, ul1.rent_end_date
-  FROM USER_LIBRARY_R1 ul1, USER_LIBRARY_R2 ul2, VIDEO v, STORE_USER u
+  FROM USER_LIBRARY_R1 ul1, USER_LIBRARY_R2 ul2, VIDEO_R1 v, STORE_USER u
   WHERE ul2.userID = u.userID
   AND ul1.transactionID = ul1.transactionID
   AND ul2.userID = 100

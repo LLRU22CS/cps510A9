@@ -65,10 +65,9 @@ public class AdminLoginScreen extends Screen {
         Button adminLoginButton = new Button("Log In");
         adminLoginButton.setOnAction(e -> {
             if (adminUsernameText.getText().equals("adminGroup94") && adminPasswordText.getText().equals("p@ssw0rd")) {
-//                window.setScene(adminHomePage);
-                System.out.println("adminLogin success");
+                this.switchScene("UnixScreen.java");
             } else {
-                cps510Assignment.AlertBox.display("Failure", "Please try again.");
+                AlertBox.display("Failure", "Please try again.");
             }
         });
         Button adminReturnToEPButton = new Button("Back");

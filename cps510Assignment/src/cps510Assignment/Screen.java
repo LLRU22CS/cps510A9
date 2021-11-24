@@ -46,12 +46,12 @@ abstract public class Screen {
         } catch (SQLException ex) {
             ex.printStackTrace();
         } finally {
-            try {
-                if (tempConn != null && !tempConn.isClosed()) 
-                    tempConn.close();
-            } catch (SQLException ex) {
-                ex.printStackTrace();
-            }
+//            try {
+//                if (tempConn != null && !tempConn.isClosed()) 
+//                    tempConn.close();
+//            } catch (SQLException ex) {
+//                ex.printStackTrace();
+//            }
             
             return tempConn;
         }
