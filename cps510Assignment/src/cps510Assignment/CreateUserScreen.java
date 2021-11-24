@@ -79,9 +79,9 @@ public class CreateUserScreen extends Screen {
         	e.consume();
         	if (validateNewUser(firstNameText, lastNameText, dateOfBirth, emailText, phoneText, usernameText, passwordText)) {
         		this.switchScene("LoginScreen.java");
-        		cps510Assignment.AlertBox.display("Success", "Please log in.");
+        		AlertBox.display("Success", "Please log in.");
         	} else {
-        		cps510Assignment.AlertBox.display("Failure", "Please try again.");
+        		AlertBox.display("Failure", "Please try again.");
         	}
         });
         Button clearButton = new Button("Clear");

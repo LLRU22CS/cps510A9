@@ -67,9 +67,6 @@ public class EntryPortalScreen extends Screen {
         Label epAdminLoginLabel = new Label("Admin:");
         Button epAdminLoginButton = new Button("Admin Log In");
         epAdminLoginButton.setOnAction(e -> this.switchScene("AdminLoginScreen.java"));
-        Label epUnixShell = new Label("Unix Shell:");
-        Button epUnixShellButton = new Button("Open Unix Shell");
-        epUnixShellButton.setOnAction(e -> this.switchScene("UnixScreen.java"));
         
         GridPane.setConstraints(epNewUserLabel, 0, 0);
         GridPane.setConstraints(epNewUserButton, 0, 1);
@@ -77,10 +74,8 @@ public class EntryPortalScreen extends Screen {
         GridPane.setConstraints(epLoginButton, 1, 1);
         GridPane.setConstraints(epAdminLoginLabel, 2, 0);
         GridPane.setConstraints(epAdminLoginButton, 2, 1);
-        GridPane.setConstraints(epUnixShell, 3, 0);
-        GridPane.setConstraints(epUnixShellButton, 3, 1);
         
-        entryGrid.getChildren().addAll(epNewUserLabel, epNewUserButton, epLoginLabel, epLoginButton, epAdminLoginLabel, epAdminLoginButton, epUnixShell, epUnixShellButton);
+        entryGrid.getChildren().addAll(epNewUserLabel, epNewUserButton, epLoginLabel, epLoginButton, epAdminLoginLabel, epAdminLoginButton);
         
         return new Scene(entryGrid, WIN_WIDTH, WIN_HEIGHT);
     }

@@ -99,12 +99,12 @@ public class LoginScreen extends Screen {
             if (rs.next()) {
                 String expected_pw = rs.getString("user_password");
                 if (!pw.getText().equals(expected_pw)) {
-                    cps510Assignment.AlertBox.display("Error", "Username/Password incorrect.");
+                    AlertBox.display("Error", "Username/Password incorrect.");
                 } else {
                     result = true;
                 }
             } else {
-                cps510Assignment.AlertBox.display("Error", "Username/Password incorrect.");
+                AlertBox.display("Error", "Username/Password incorrect.");
             }
 
         } catch (SQLException e) {
