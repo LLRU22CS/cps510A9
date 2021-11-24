@@ -81,33 +81,36 @@ public class UnixScreen extends Screen {
     
     private void dropTables() {
         String[] queries = {
-            "drop TABLE ACTORS;",
-            "drop TABLE FILE_LOCATIONS;",
-            "drop TABLE VIDEO_CATEGORIES;",
-            "drop TABLE RENTAL_DURATION;",
-            "drop TABLE CATEGORIES;",
-            "drop TABLE SHOPPING_CART;",
-            "drop TABLE WISHLIST;",
-            "drop TABLE REVIEW;",
-            "drop TABLE USER_LIBRARY_R1;",
-            "drop TABLE USER_LIBRARY_R2;",
-            "drop TABLE USER_TRANSACTION;",
-            "drop TABLE PAYMENT_METHOD;",
-            "drop TABLE VIDEO;",
-            "drop TABLE STORE_USER;",
-            "drop VIEW TOTAL_POINTS;",
-            "drop VIEW ALL_SUCCESSFUL_TRANSACTIONS;",
-            "drop VIEW DISCOUNTED_WEEKEND_RENTALS;",
-            "drop VIEW GREAT_DEALS_TO_OWN;",
-            "drop VIEW CARD_EXPIRED_TRANSACTIONS;"
+            "drop TABLE ACTORS",
+            "drop TABLE FILE_LOCATIONS",
+            "drop TABLE VIDEO_CATEGORIES",
+            "drop TABLE RENTAL_DURATION",
+            "drop TABLE CATEGORIES",
+            "drop TABLE SHOPPING_CART",
+            "drop TABLE WISHLIST",
+            "drop TABLE REVIEW",
+            "drop TABLE USER_LIBRARY_R2",
+            "drop TABLE USER_LIBRARY_R1",
+            "drop TABLE USER_TRANSACTION",
+            "drop TABLE PAYMENT_METHOD",
+            "drop TABLE VIDEO",
+            "drop TABLE STORE_USER",
+            "drop VIEW TOTAL_POINTS",
+            "drop VIEW ALL_SUCCESSFUL_TRANSACTIONS",
+            "drop VIEW DISCOUNTED_WEEKEND_RENTALS",
+            "drop VIEW GREAT_DEALS_TO_OWN",
+            "drop VIEW CARD_EXPIRED_TRANSACTIONS"
         };
         
         try (Statement stmt = conn1.createStatement()) {
             
-            String query = "drop TABLE ACTORS;";
-            stmt.executeQuery(query);
+            for (String query : queries) {
+                stmt.executeQuery(query);
+                System.out.println(query);
+            }
             
         } catch (SQLException e) {
+            System.out.println(e);
             System.out.println(e.getErrorCode());
         }
     }
