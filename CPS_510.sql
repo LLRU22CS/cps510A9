@@ -9,11 +9,11 @@ drop TABLE WISHLIST;
 drop TABLE REVIEW;
 drop TABLE USER_LIBRARY_R2 CASCADE CONSTRAINTS; 
 drop TABLE USER_LIBRARY_R1 CASCADE CONSTRAINTS; 
-drop TABLE USER_TRANSACTION;
-drop TABLE PAYMENT_METHOD;
+drop TABLE USER_TRANSACTION CASCADE CONSTRAINTS;
+drop TABLE PAYMENT_METHOD CASCADE CONSTRAINTS;
 drop TABLE VIDEO_R1;
 drop TABLE VIDEO_R2;
-drop TABLE STORE_USER;
+drop TABLE STORE_USER CASCADE CONSTRAINTS;
 drop VIEW TOTAL_POINTS;
 drop VIEW ALL_SUCCESSFUL_TRANSACTIONS;
 drop VIEW DISCOUNTED_WEEKEND_RENTALS;
@@ -173,84 +173,108 @@ INSERT INTO STORE_USER VALUES (
     6475652302, 
     TO_DATE('23/08/1992', 'DD/MM/YYYY')
 );
-INSERT INTO VIDEO VALUES (
+INSERT INTO VIDEO_R1 VALUES (
     100, 
     'Saving Private Ryan', 
+    1998,
+    'Steven Spielberg'
+);
+INSERT INTO VIDEO_R2 VALUES (
+    100, 
     169, 
     '14A', 
-    1998,
     'Following the Normandy Landings, a group of U.S. soldiers go behind enemy lines to retrieve a paratrooper whose brothers have been killed in action.',
-    'Steven Spielberg',
     14.99
 );
-INSERT INTO VIDEO VALUES (
+INSERT INTO VIDEO_R1 VALUES (
     101, 
     'Inglorious Basterds', 
-    153, 
-    '18A', 
     2009,
+    'Quentin Tarantino'
+);
+INSERT INTO VIDEO_R2 VALUES (
+    101, 
+    153, 
+    '18A',
     'In Nazi-occupied France during World War II, a plan to assassinate Nazi leaders by a group of Jewish U.S. soldiers coincides with a theatre owner''s vengeful plans for the same.',
-    'Quentin Tarantino',
     15.99
 );
-INSERT INTO VIDEO VALUES (
+INSERT INTO VIDEO_R1 VALUES (
     102, 
     'Pulp Fiction', 
+    1994,
+    'Quentin Tarantino'
+);
+INSERT INTO VIDEO_R2 VALUES (
+    102, 
     154, 
     '18A', 
-    1994,
     'The lives of two mob hitmen, a boxer, a gangster and his wife, and a pair of diner bandits intertwine in four tales of violence and redemption.',
-    'Quentin Tarantino',
     13.99
 );
-INSERT INTO VIDEO VALUES (
+INSERT INTO VIDEO_R1 VALUES (
     103, 
     'The Room', 
+    2003,
+    'Tommy Wiseau'
+);
+INSERT INTO VIDEO_R2 VALUES (
+    103, 
     99, 
     '18A', 
-    2003,
     'Johnny is a successful bank executive who lives quietly in a San Francisco townhouse with his fiance, Lisa. One day, putting aside any scruple, she seduces Johnny''s best friend, Mark. From there, nothing will be the same again.',
-    'Tommy Wiseau',
     7.99
 );
-INSERT INTO VIDEO VALUES (
+INSERT INTO VIDEO_R1 VALUES (
     104, 
     'Interstellar', 
+    2014,
+    'Christopher Nolan'
+);
+INSERT INTO VIDEO_R2 VALUES (
+    104, 
     169, 
     'PG', 
-    2014,
     'A team of explorers travel through a wormhole in space in an attempt to ensure humanity''s survival.',
-    'Christopher Nolan',
     10.99
 );
-INSERT INTO VIDEO VALUES (
+INSERT INTO VIDEO_R1 VALUES (
     105, 
     'Inception', 
+    2010,
+    'Christopher Nolan'
+);
+INSERT INTO VIDEO_R2 VALUES (
+    105,  
     148, 
     'PG', 
-    2010,
     'A thief who steals corporate secrets through the use of dream-sharing technology is given the inverse task of planting an idea into the mind of a C.E.O., but his tragic past may doom the project and his team to disaster.',
-    'Christopher Nolan',
     11.99
 );
-INSERT INTO VIDEO VALUES (
+INSERT INTO VIDEO_R1 VALUES (
     106, 
     'Happy Gilmore', 
+    1996,
+    'Dennis Dugan'
+);
+INSERT INTO VIDEO_R2 VALUES (
+    106, 
     96, 
     'PG', 
-    1996,
     'A rejected hockey player puts his skills to the golf course to save his grandmother''s house.',
-    'Dennis Dugan',
     9.99
 );
-INSERT INTO VIDEO VALUES (
+INSERT INTO VIDEO_R1 VALUES (
     107, 
     'The Dark Knight Rises', 
+    2012,
+    'Christopher Nolan'
+);
+INSERT INTO VIDEO_R2 VALUES (
+    107, 
     164, 
     '14A', 
-    2012,
     'Eight years after the Joker''s reign of anarchy, Batman, with the help of the enigmatic Catwoman, is forced from his exile to save Gotham City from the brutal guerrilla terrorist Bane.',
-    'Christopher Nolan',
     9.99
 );
 INSERT INTO PAYMENT_METHOD VALUES (100, 100, 5555555555554444, 'MASTERCARD', 123, TO_DATE('09/2022', 'MM/YYYY'), 'Jared', 'Fogle', '69 victoria street', NULL, 'Toronto', 'Ontario', 'A1B2C3', 'Canada');
@@ -261,13 +285,20 @@ INSERT INTO USER_TRANSACTION VALUES (100, 100, 101, 100, 0, 14.99, 'PURCHASE', D
 INSERT INTO USER_TRANSACTION VALUES (101, 101, 102, 101, 0, 2.99, 'RENT', DEFAULT);
 INSERT INTO USER_TRANSACTION VALUES (102, 100, 100, 100, 1, 14.99, 'PURCHASE', DEFAULT);
 INSERT INTO USER_TRANSACTION VALUES (103, 101, 103, 101, 1, 2.99, 'RENT', DEFAULT);
-INSERT INTO CATEGORIES VALUES (100, 'Stand-Up', 'Stand-up comedy specials');
-INSERT INTO CATEGORIES VALUES (101, 'Comedy', 'Family friendly comedy movies');
-INSERT INTO CATEGORIES VALUES (102, 'Adult Comedy', '14A, 18A, and R rated comedy movies');
-INSERT INTO CATEGORIES VALUES (103, 'Adventure', 'High-thrill stories');
-INSERT INTO CATEGORIES VALUES (104, 'Horror', 'Viewer discretion advised for younger audiences');
-INSERT INTO CATEGORIES VALUES (105, 'Documentary', 'Non-fiction programs');
-INSERT INTO CATEGORIES VALUES (106, 'Drama', 'Thrilling stories of love and heartbreak');
+INSERT INTO CATEGORIES_R1 VALUES (100, 'Stand-Up');
+INSERT INTO CATEGORIES_R2 VALUES ('Stand-Up', 'Stand-up comedy specials');
+INSERT INTO CATEGORIES_R1 VALUES (101, 'Comedy');
+INSERT INTO CATEGORIES_R2 VALUES ('Comedy', 'Family friendly comedy movies');
+INSERT INTO CATEGORIES_R1 VALUES (102, 'Adult Comedy');
+INSERT INTO CATEGORIES_R2 VALUES ('Adult Comedy', '14A, 18A, and R rated comedy movies');
+INSERT INTO CATEGORIES_R1 VALUES (103, 'Adventure');
+INSERT INTO CATEGORIES_R2 VALUES ('Adventure', 'High-thrill stories');
+INSERT INTO CATEGORIES_R1 VALUES (104, 'Horror');
+INSERT INTO CATEGORIES_R2 VALUES ('Horror', 'Viewer discretion advised for younger audiences');
+INSERT INTO CATEGORIES_R1 VALUES (105, 'Documentary');
+INSERT INTO CATEGORIES_R2 VALUES ('Documentary', 'Non-fiction programs');
+INSERT INTO CATEGORIES_R1 VALUES (106, 'Drama');
+INSERT INTO CATEGORIES_R2 VALUES ('Drama', 'Thrilling stories of love and heartbreak');
 INSERT INTO ACTORS VALUES (100, 'Hanks', 'Tom', 'Captain Miller');
 INSERT INTO ACTORS VALUES (100, 'Daman', 'Matt', 'Private Ryan');
 INSERT INTO ACTORS VALUES (101, 'Pitt', 'Brad', 'Lt. Aldo Raine');
