@@ -57,6 +57,7 @@ public class ShoppingCartScreen extends Screen{
         sclabel.setFont(new Font("Arial", 20));
         Button backButton1 = new Button("Back to Home");
         backButton1.setOnAction(e -> this.switchScene("HomepageScreen.java"));
+        Button deleterowButton = new Button("Remove Selected Movie");
         TableView scTable = new TableView();
 
 
@@ -99,15 +100,22 @@ public class ShoppingCartScreen extends Screen{
                     String description = rs.getString("video_description");
                     double purchasePrice = rs.getDouble("purchase_price");
 
-                    Video v = new Video(videoID, title, releaseYear, director, videoDuration, rating, description, purchasePrice, points);
+                    Video v = new Video(videoID, title, releaseYear, director, videoDuration, rating, description, purchasePrice);
                     videos.add(v);
                 }
             }
-            
+
         } catch (SQLException e) {
             System.out.println(e);
         }
         
+        deleterowButton.setOnAction(e -> 
+            {
+                int selectedIndex = scTable.getSelectionModel().getSelectedIndex();
+                scTable.getItems().removeAll(scTable.getSelectionModel().getSelectedItem());
+                int selectedVideoID = videos.get(selectedIndex).getVideoID();
+                deleteQuery(selectedVideoID);
+            });
         
         scTable.setColumnResizePolicy( TableView.CONSTRAINED_RESIZE_POLICY );
         MovieNameCol.setMaxWidth( 1f * Integer.MAX_VALUE * 30 ); 
@@ -129,9 +137,16 @@ public class ShoppingCartScreen extends Screen{
         final VBox scbox = new VBox();
         scbox.setSpacing(5);
         scbox.setPadding(new Insets(20, 10, 10, 20));
-        scbox.getChildren().addAll(sclabel, scTable, backButton1);
+        scbox.getChildren().addAll(sclabel, scTable, deleterowButton, backButton1);
         return new Scene(scbox, WIN_WIDTH, WIN_HEIGHT);
      }
     
-    
+    private void deleteQuery(int videoid){
+        try(Statement stmt = conn1.createStatement()){
+            stmt.executeQuery("DELETE FROM SHOPPING_CART WHERE userID = '" + Main.userID + "' AND videoID = '" + videoid + "'");
+        }catch (SQLException e){
+            System.out.println(e);
+            
+        }
+    }
 }

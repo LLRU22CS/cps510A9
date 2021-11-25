@@ -38,6 +38,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.ZoneId;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.util.Properties;
 
 /**
@@ -713,7 +714,7 @@ public class UnixScreen extends Screen {
             for (String query : queries) {
                 try {
                     ResultSet rs = stmt.executeQuery(query);
-                    System.out.println(query);
+                    printTableFromRS(rs);                    
                 } catch (Exception e) {
                     System.out.println(e);
                 }
@@ -725,6 +726,54 @@ public class UnixScreen extends Screen {
         
     }
     
+    private void printTableFromRS(ResultSet rs) throws SQLException {
+        ResultSetMetaData metaData = rs.getMetaData();
+        
+        // names of columns
+        ArrayList<String> columnNames = new ArrayList<>();
+        int columnCount = metaData.getColumnCount();
+        for (int column = 1; column <= columnCount; column++) {
+            columnNames.add(metaData.getColumnName(column));
+        }
 
+        // data of the table
+        ArrayList<ArrayList<String>> data = new ArrayList<>();
+        while (rs.next()) {
+            ArrayList<String> row = new ArrayList<>();
+            for (int columnIndex = 1; columnIndex <= columnCount; columnIndex++) {
+                row.add(rs.getString(columnIndex));
+            }
+            data.add(row);
+        }
+        
+        // print out the header
+        for (int i = 0; i < columnNames.size(); i++) {
+            String name = columnNames.get(i);
+            
+            if (i != 0) 
+                System.out.print("|");
+            
+            System.out.print(String.format("%22.22s", name));
+        }
+        System.out.println("");
+        for (int i = 0; i < columnNames.size() * 23 - 1; i++) {
+            System.out.print("-");
+        }
+        System.out.println("");
+        
+        // print out the body
+        for (ArrayList<String> row : data) {
+            for (int i = 0; i < row.size(); i++) {
+                String val = row.get(i);
+                
+                if (i != 0) 
+                    System.out.print("|");
+                
+                System.out.print(String.format("%22.22s", val));
+            }
+            System.out.println("");
+        }
+        System.out.println("");
+    }
     
 }
