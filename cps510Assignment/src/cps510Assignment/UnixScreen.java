@@ -86,16 +86,18 @@ public class UnixScreen extends Screen {
             "drop TABLE FILE_LOCATIONS",
             "drop TABLE VIDEO_CATEGORIES",
             "drop TABLE RENTAL_DURATION",
-            "drop TABLE CATEGORIES",
+            "drop TABLE CATEGORIES_R1 CASCADE CONSTRAINTS",
+            "drop TABLE CATEGORIES_R2 CASCADE CONSTRAINTS",
             "drop TABLE SHOPPING_CART",
             "drop TABLE WISHLIST",
             "drop TABLE REVIEW",
-            "drop TABLE USER_LIBRARY_R2",
-            "drop TABLE USER_LIBRARY_R1",
-            "drop TABLE USER_TRANSACTION",
-            "drop TABLE PAYMENT_METHOD",
-            "drop TABLE VIDEO",
-            "drop TABLE STORE_USER",
+            "drop TABLE USER_LIBRARY_R2 CASCADE CONSTRAINTS",
+            "drop TABLE USER_LIBRARY_R1 CASCADE CONSTRAINTS",
+            "drop TABLE USER_TRANSACTION CASCADE CONSTRAINTS",
+            "drop TABLE PAYMENT_METHOD CASCADE CONSTRAINTS",
+            "drop TABLE VIDEO_R1 CASCADE CONSTRAINTS",
+            "drop TABLE VIDEO_R2 CASCADE CONSTRAINTS",
+            "drop TABLE STORE_USER CASCADE CONSTRAINTS",
             "drop VIEW TOTAL_POINTS",
             "drop VIEW ALL_SUCCESSFUL_TRANSACTIONS",
             "drop VIEW DISCOUNTED_WEEKEND_RENTALS",
@@ -133,14 +135,18 @@ public class UnixScreen extends Screen {
                 "PRIMARY KEY (userID)" +
             ")",
 
-            "CREATE TABLE VIDEO (" +
+            "CREATE TABLE VIDEO_R1 (" +
                 "videoID NUMBER NOT NULL PRIMARY KEY," +
                 "title VARCHAR2(400) NOT NULL," +
+                "release_year NUMBER(4, 0) NOT NULL," +
+                "director VARCHAR2(500) NOT NULL" +
+            ")",
+            
+            "CREATE TABLE VIDEO_R2 (" +
+                "videoID NUMBER NOT NULL PRIMARY KEY," +
                 "video_duration NUMBER(3,0) NOT NULL," +
                 "rating VARCHAR2(12) NOT NULL," +
-                "release_year NUMBER(4, 0) NOT NULL," +
                 "video_description VARCHAR2(2000)," +
-                "director VARCHAR2(500)," +
                 "purchase_price NUMBER(5,2) " +
             ")",
 
@@ -174,14 +180,18 @@ public class UnixScreen extends Screen {
                 "PRIMARY KEY (transactionID)" +
             ")",
 
-            "CREATE TABLE CATEGORIES (" +
+            "CREATE TABLE CATEGORIES_R1 (" +
                 "categoryID NUMBER NOT NULL PRIMARY KEY," +
-                "category_name VARCHAR2(120) NOT NULL," +
+                "category_name VARCHAR2(120) NOT NULL" +
+            ")",
+            
+            "CREATE TABLE CATEGORIES_R2 (" +
+                "category_name VARCHAR2(120) NOT NULL PRIMARY KEY," +
                 "description VARCHAR2(1000)" +
             ")",
 
             "CREATE TABLE ACTORS (" +
-                "videoID NUMBER REFERENCES VIDEO(videoID) ON DELETE CASCADE," +
+                "videoID NUMBER REFERENCES VIDEO_R1(videoID) ON DELETE CASCADE," +
                 "actor_last_name VARCHAR2(20)," +
                 "actor_first_name VARCHAR(20)," +
                 "character_name VARCHAR(30)," +
@@ -189,20 +199,20 @@ public class UnixScreen extends Screen {
             ")",
 
             "CREATE TABLE FILE_LOCATIONS (" +
-                "videoID NUMBER REFERENCES VIDEO(videoID) ON DELETE CASCADE," +
+                "videoID NUMBER REFERENCES VIDEO_R1(videoID) ON DELETE CASCADE," +
                 "file_type VARCHAR2(20) NOT NULL," +
                 "file_location VARCHAR(50) NOT NULL," +
                 "PRIMARY KEY (videoID, file_type)" +
             ")",
 
             "CREATE TABLE VIDEO_CATEGORIES (" +
-                "videoID NUMBER REFERENCES VIDEO(videoID) ON DELETE CASCADE," +
-                "categoryID NUMBER REFERENCES CATEGORIES(categoryID)," +
+                "videoID NUMBER REFERENCES VIDEO_R1(videoID) ON DELETE CASCADE," +
+                "categoryID NUMBER REFERENCES CATEGORIES_R1(categoryID)," +
                 "PRIMARY KEY (videoID, categoryID)" +
             ")",
 
             "CREATE TABLE RENTAL_DURATION (" +
-                "videoID NUMBER REFERENCES VIDEO(videoID) ON DELETE CASCADE," +
+                "videoID NUMBER REFERENCES VIDEO_R1(videoID) ON DELETE CASCADE," +
                 "rental_duration NUMBER NOT NULL CHECK (rental_duration BETWEEN 1 AND 30)," +
                 "rental_price NUMBER(5,2) NOT NULL," +
                 "PRIMARY KEY (videoID, rental_duration)" +
@@ -210,19 +220,19 @@ public class UnixScreen extends Screen {
 
             "CREATE TABLE SHOPPING_CART(" +
                 "userID NUMBER REFERENCES STORE_USER(userID) ON DELETE CASCADE," +
-                "videoID NUMBER REFERENCES VIDEO(videoID) ON DELETE CASCADE," +
+                "videoID NUMBER REFERENCES VIDEO_R1(videoID) ON DELETE CASCADE," +
                 "total_price NUMBER(5,2) DEFAULT 0.00," +
                 "points NUMBER DEFAULT 0" +
             ")",
 
             "CREATE TABLE WISHLIST(" +
                 "userID NUMBER REFERENCES STORE_USER(userID) ON DELETE CASCADE," +
-                "videoID NUMBER REFERENCES VIDEO(videoID) ON DELETE CASCADE" +
+                "videoID NUMBER REFERENCES VIDEO_R1(videoID) ON DELETE CASCADE" +
             ")",
 
             "CREATE TABLE REVIEW(" +
                 "userID NUMBER REFERENCES STORE_USER(userID) ON DELETE CASCADE," +
-                "videoID NUMBER REFERENCES VIDEO(videoID) ON DELETE CASCADE," +
+                "videoID NUMBER REFERENCES VIDEO_R1(videoID) ON DELETE CASCADE," +
                 "review VARCHAR2(1000)," +
                 "rating NUMBER NOT NULL CHECK (rating BETWEEN 1 AND 5)," +
                 "rtitle VARCHAR2(150) NOT NULL," +
@@ -239,7 +249,7 @@ public class UnixScreen extends Screen {
             ")",
 
             "CREATE TABLE USER_LIBRARY_R2(" +
-                "videoID NUMBER REFERENCES VIDEO(videoID) ON DELETE CASCADE," +
+                "videoID NUMBER REFERENCES VIDEO_R1(videoID) ON DELETE CASCADE," +
                 "userID NUMBER REFERENCES STORE_USER(userID) ON DELETE CASCADE," +
                 "transactionID NUMBER REFERENCES USER_LIBRARY_R1(transactionID) ON DELETE CASCADE" +
             ")"
@@ -284,84 +294,108 @@ public class UnixScreen extends Screen {
                 "6475652302, " +
                 "TO_DATE('23/08/1992', 'DD/MM/YYYY')" +
             ")",
-            "INSERT INTO VIDEO VALUES (" +
+            "INSERT INTO VIDEO_R1 VALUES (" +
                 "100, " +
                 "'Saving Private Ryan', " +
+                "1998," +
+                "'Steven Spielberg'" +
+            ")",
+            "INSERT INTO VIDEO_R2 VALUES (" +
+                "100, " +
                 "169, " +
                 "'14A', " +
-                "1998," +
                 "'Following the Normandy Landings, a group of U.S. soldiers go behind enemy lines to retrieve a paratrooper whose brothers have been killed in action.'," +
-                "'Steven Spielberg'," +
                 "14.99" +
             ")",
-            "INSERT INTO VIDEO VALUES (" +
+            "INSERT INTO VIDEO_R1 VALUES (" +
                 "101, " +
                 "'Inglorious Basterds', " +
+                "2009," +
+                "'Quentin Tarantino'" +
+            ")",
+            "INSERT INTO VIDEO_R2 VALUES (" +
+                "101, " +
                 "153, " +
                 "'18A', " +
-                "2009," +
                 "'In Nazi-occupied France during World War II, a plan to assassinate Nazi leaders by a group of Jewish U.S. soldiers coincides with a theatre owner''s vengeful plans for the same.'," +
-                "'Quentin Tarantino'," +
                 "15.99" +
             ")",
-            "INSERT INTO VIDEO VALUES (" +
+            "INSERT INTO VIDEO_R1 VALUES (" +
                 "102, " +
                 "'Pulp Fiction', " +
+                "1994, " +
+                "'Quentin Tarantino'" +
+            ")",
+            "INSERT INTO VIDEO_R2 VALUES (" +
+                "102, " +
                 "154, " +
                 "'18A', " +
-                "1994," +
                 "'The lives of two mob hitmen, a boxer, a gangster and his wife, and a pair of diner bandits intertwine in four tales of violence and redemption.'," +
-                "'Quentin Tarantino'," +
                 "13.99" +
             ")",
-            "INSERT INTO VIDEO VALUES (" +
+            "INSERT INTO VIDEO_R1 VALUES (" +
                 "103, " +
                 "'The Room', " +
+                "2003," +
+                "'Tommy Wiseau'" +
+            ")",
+            "INSERT INTO VIDEO_R2 VALUES (" +
+                "103, " +
                 "99, " +
                 "'18A', " +
-                "2003," +
                 "'Johnny is a successful bank executive who lives quietly in a San Francisco townhouse with his fiance, Lisa. One day, putting aside any scruple, she seduces Johnny''s best friend, Mark. From there, nothing will be the same again.'," +
-                "'Tommy Wiseau'," +
                 "7.99" +
             ")",
-            "INSERT INTO VIDEO VALUES (" +
+            "INSERT INTO VIDEO_R1 VALUES (" +
                 "104, " +
                 "'Interstellar', " +
+                "2014," +
+                "'Christopher Nolan'" +
+            ")",
+            "INSERT INTO VIDEO_R2 VALUES (" +
+                "104, " +
                 "169, " +
                 "'PG', " +
-                "2014," +
                 "'A team of explorers travel through a wormhole in space in an attempt to ensure humanity''s survival.'," +
-                "'Christopher Nolan'," +
                 "10.99" +
             ")",
-            "INSERT INTO VIDEO VALUES (" +
+            "INSERT INTO VIDEO_R1 VALUES (" +
                 "105, " +
                 "'Inception', " +
+                "2010," +
+                "'Christopher Nolan'" +
+            ")",
+            "INSERT INTO VIDEO_R2 VALUES (" +
+                "105, " +
                 "148, " +
                 "'PG', " +
-                "2010," +
                 "'A thief who steals corporate secrets through the use of dream-sharing technology is given the inverse task of planting an idea into the mind of a C.E.O., but his tragic past may doom the project and his team to disaster.'," +
-                "'Christopher Nolan'," +
                 "11.99" +
             ")",
-            "INSERT INTO VIDEO VALUES (" +
+            "INSERT INTO VIDEO_R1 VALUES (" +
                 "106, " +
                 "'Happy Gilmore', " +
+                "1996," +
+                "'Dennis Dugan'" +
+            ")",
+            "INSERT INTO VIDEO_R2 VALUES (" +
+                "106, " +
                 "96, " +
                 "'PG', " +
-                "1996," +
                 "'A rejected hockey player puts his skills to the golf course to save his grandmother''s house.'," +
-                "'Dennis Dugan'," +
                 "9.99" +
             ")",
-            "INSERT INTO VIDEO VALUES (" +
+            "INSERT INTO VIDEO_R1 VALUES (" +
                 "107, " +
                 "'The Dark Knight Rises', " +
+                "2012," +
+                "'Christopher Nolan'" +
+            ")",
+            "INSERT INTO VIDEO_R2 VALUES (" +
+                "107, " +
                 "164, " +
                 "'14A', " +
-                "2012," +
                 "'Eight years after the Joker''s reign of anarchy, Batman, with the help of the enigmatic Catwoman, is forced from his exile to save Gotham City from the brutal guerrilla terrorist Bane.'," +
-                "'Christopher Nolan'," +
                 "9.99" +
             ")",
             "INSERT INTO PAYMENT_METHOD VALUES (100, 100, 5555555555554444, 'MASTERCARD', 123, TO_DATE('09/2022', 'MM/YYYY'), 'Jared', 'Fogle', '69 victoria street', NULL, 'Toronto', 'Ontario', 'A1B2C3', 'Canada')",
@@ -372,13 +406,28 @@ public class UnixScreen extends Screen {
             "INSERT INTO USER_TRANSACTION VALUES (101, 101, 102, 101, 0, 2.99, 'RENT', DEFAULT)",
             "INSERT INTO USER_TRANSACTION VALUES (102, 100, 100, 100, 1, 14.99, 'PURCHASE', DEFAULT)",
             "INSERT INTO USER_TRANSACTION VALUES (103, 101, 103, 101, 1, 2.99, 'RENT', DEFAULT)",
-            "INSERT INTO CATEGORIES VALUES (100, 'Stand-Up', 'Stand-up comedy specials')",
-            "INSERT INTO CATEGORIES VALUES (101, 'Comedy', 'Family friendly comedy movies')",
-            "INSERT INTO CATEGORIES VALUES (102, 'Adult Comedy', '14A, 18A, and R rated comedy movies')",
-            "INSERT INTO CATEGORIES VALUES (103, 'Adventure', 'High-thrill stories')",
-            "INSERT INTO CATEGORIES VALUES (104, 'Horror', 'Viewer discretion advised for younger audiences')",
-            "INSERT INTO CATEGORIES VALUES (105, 'Documentary', 'Non-fiction programs')",
-            "INSERT INTO CATEGORIES VALUES (106, 'Drama', 'Thrilling stories of love and heartbreak')",
+            
+            "INSERT INTO CATEGORIES_R1 VALUES (100, 'Stand-Up')",
+            "INSERT INTO CATEGORIES_R2 VALUES ('Stand-Up', 'Stand-up comedy specials')",
+            
+            "INSERT INTO CATEGORIES_R1 VALUES (101, 'Comedy')",
+            "INSERT INTO CATEGORIES_R2 VALUES ('Comedy', 'Family friendly comedy movies')",
+            
+            "INSERT INTO CATEGORIES_R1 VALUES (102, 'Adult Comedy')",
+            "INSERT INTO CATEGORIES_R2 VALUES ('Adult Comedy', '14A, 18A, and R rated comedy movies')",
+            
+            "INSERT INTO CATEGORIES_R1 VALUES (103, 'Adventure')",
+            "INSERT INTO CATEGORIES_R2 VALUES ('Adventure', 'High-thrill stories')",
+            
+            "INSERT INTO CATEGORIES_R1 VALUES (104, 'Horror')",
+            "INSERT INTO CATEGORIES_R2 VALUES ('Horror', 'Viewer discretion advised for younger audiences')",
+            
+            "INSERT INTO CATEGORIES_R1 VALUES (105, 'Documentary')",
+            "INSERT INTO CATEGORIES_R2 VALUES ('Documentary', 'Non-fiction programs')",
+            
+            "INSERT INTO CATEGORIES_R1 VALUES (106, 'Drama')",
+            "INSERT INTO CATEGORIES_R2 VALUES ('Drama', 'Thrilling stories of love and heartbreak')",
+            
             "INSERT INTO ACTORS VALUES (100, 'Hanks', 'Tom', 'Captain Miller')",
             "INSERT INTO ACTORS VALUES (100, 'Daman', 'Matt', 'Private Ryan')",
             "INSERT INTO ACTORS VALUES (101, 'Pitt', 'Brad', 'Lt. Aldo Raine')",
@@ -475,11 +524,11 @@ public class UnixScreen extends Screen {
         
         String[] queries = {
             // all video titles
-            "SELECT title FROM VIDEO",
+            "SELECT title FROM VIDEO_R1",
 
             // actors from Inglorious Basterds
             "SELECT actor_first_name, actor_last_name " +
-                "FROM VIDEO v, ACTORS a " +
+                "FROM VIDEO_R1 v, ACTORS a " +
                 "WHERE v.videoID = a.videoID " +
                 "AND v.title = 'Inglorious Basterds'",
 
@@ -492,8 +541,8 @@ public class UnixScreen extends Screen {
                                 "GROUP BY categoryID " +
                                 "ORDER BY catcount DESC) " +
                         "WHERE ROWNUM = 1) x, " +
-                    "VIDEO v, " +
-                    "CATEGORIES c, " +
+                    "VIDEO_R1 v, " +
+                    "CATEGORIES_R1 c, " +
                     "VIDEO_CATEGORIES y " +
                 "WHERE c.categoryID = x.categoryID " +
                     "AND y.categoryID = x.categoryID " +
@@ -507,18 +556,19 @@ public class UnixScreen extends Screen {
 
             // view of cheap purchases that can't be rented
             "CREATE VIEW GREAT_DEALS_TO_OWN (title, new_low_price) AS " +
-                "(SELECT v.title, v.purchase_price " +
-                    "FROM VIDEO v " +
-                    "WHERE v.purchase_price < 10 " +
+                "(SELECT v1.title, v2.purchase_price " +
+                    "FROM VIDEO_R1 v1, VIDEO_R2 v2 " +
+                    "WHERE v2.purchase_price < 10 " +
+                        "AND v1.videoID = v2.videoID " +
                         "AND NOT EXISTS  " +
-                        "(SELECT r.videoID FROM RENTAL_DURATION r WHERE v.videoID = r.videoID) " +
+                        "(SELECT r.videoID FROM RENTAL_DURATION r WHERE v1.videoID = r.videoID) " +
                 ") " +
-                "ORDER BY v.purchase_price ASC",
+                "ORDER BY v2.purchase_price ASC",
             "SELECT * FROM GREAT_DEALS_TO_OWN",
 
             // retreive the file location of the trailers for all the applicable movies in the adventure category
             "SELECT v.title, f.file_location  " +
-                "FROM VIDEO v, FILE_LOCATIONS f, VIDEO_CATEGORIES c  " +
+                "FROM VIDEO_R1 v, FILE_LOCATIONS f, VIDEO_CATEGORIES c  " +
                 "WHERE v.videoID = c.videoID " +
                 "AND c.categoryID = 103 " +
                 "AND f.videoID = v.videoID " +
@@ -526,7 +576,7 @@ public class UnixScreen extends Screen {
 
             // retreive the videoID of all the movies in the adventure category that have trailers
             "SELECT v.title " +
-                "FROM VIDEO v, VIDEO_CATEGORIES c  " +
+                "FROM VIDEO_R1 v, VIDEO_CATEGORIES c  " +
                 "WHERE v.videoID = c.videoID " +
                 "AND c.categoryID = 103 " +
                 "AND EXISTS ( " +
@@ -535,14 +585,14 @@ public class UnixScreen extends Screen {
 
             // the amount of options that a video can be rented for (include 0)
             "SELECT v.title, COUNT(r.videoID) as rental_options " +
-                "FROM VIDEO v LEFT JOIN RENTAL_DURATION r ON v.videoID = r.videoID " +
+                "FROM VIDEO_R1 v LEFT JOIN RENTAL_DURATION r ON v.videoID = r.videoID " +
                 "GROUP BY r.videoID, v.title " +
                 "ORDER BY v.title",
 
             // view of short-term rentals
             "CREATE VIEW DISCOUNTED_WEEKEND_RENTALS (title, nights, slashed_cost) AS " +
                 "(SELECT v.title, r.rental_duration, rental_price " +
-                    "FROM VIDEO v, RENTAL_DURATION r " +
+                    "FROM VIDEO_R1 v, RENTAL_DURATION r " +
                     "WHERE v.videoID = r.videoID " +
                         "AND r.rental_duration < 3 " +
                         "AND r.rental_price < 3 " +
@@ -551,25 +601,25 @@ public class UnixScreen extends Screen {
             "SELECT * FROM DISCOUNTED_WEEKEND_RENTALS",
 
             // average purchase price of every movie
-            "SELECT COUNT(purchase_price) as NUMBER_OF_PURCHASEABLE_MOVIES, AVG(purchase_price) as AVERAGE_PURCHASE_PRICE FROM VIDEO",
+            "SELECT COUNT(purchase_price) as NUMBER_OF_PURCHASEABLE_MOVIES, AVG(purchase_price) as AVERAGE_PURCHASE_PRICE FROM VIDEO_R2",
 
             // drama category description and movies
-            "SELECT category_name, description FROM CATEGORIES WHERE categoryID = 106 " +
+            "SELECT c2.category_name, c2.description FROM CATEGORIES_R1 c1, CATEGORIES_R2 c2 WHERE c1.categoryID = 106 AND c1.category_name = c2.category_name " +
             "UNION " +
-            "SELECT v.title, v.rating FROM VIDEO v, VIDEO_CATEGORIES c WHERE v.videoID = c.videoID AND c.categoryID = 106",
+            "SELECT v1.title, v2.rating FROM VIDEO_R1 v1, VIDEO_R2 v2, VIDEO_CATEGORIES c WHERE v1.videoID = c.videoID AND v1.videoID = v2.videoID AND c.categoryID = 106",
 
             // movies after certain release year
-            "SELECT title, release_year FROM VIDEO WHERE release_year >= 2000 ORDER BY release_year DESC",
+            "SELECT title, release_year FROM VIDEO_R1 WHERE release_year >= 2000 ORDER BY release_year DESC",
 
             // view of distinguished directors
             "SELECT v.director, v.title " +
-                "FROM (SELECT COUNT(director) as films_directed, director FROM VIDEO GROUP BY director ORDER BY films_directed DESC) x, VIDEO v " +
+                "FROM (SELECT COUNT(director) as films_directed, director FROM VIDEO_R1 GROUP BY director ORDER BY films_directed DESC) x, VIDEO_R1 v " +
                 "WHERE x.films_directed > 1 " +
                     "AND x.director = v.director",
 
             // Movies in the wishlist of the userID 100
             "SELECT title " +
-                "FROM VIDEO v, WISHLIST w, STORE_USER u " +
+                "FROM VIDEO_R1 v, WISHLIST w, STORE_USER u " +
                 "WHERE v.videoID = w.videoID " +
                 "AND w.userID = u.userID " +
                 "AND w.userID = 100 " +
@@ -606,7 +656,7 @@ public class UnixScreen extends Screen {
 
             // Displays reviews written for video ID of 101
             "SELECT u.username, v.title, rev.rtitle, rev.review, rev.rating " +
-                "FROM REVIEW rev, VIDEO v, STORE_USER u " +
+                "FROM REVIEW rev, VIDEO_R1 v, STORE_USER u " +
                 "WHERE rev.userID = u.userID " +
                 "AND v.videoID = rev.videoID " +
                 "AND rev.videoID = 101 " +
@@ -614,7 +664,7 @@ public class UnixScreen extends Screen {
 
             // Displays users library of ID 100 in descending order
             "SELECT v.title, ul1.rent_own, ul1.rent_duration, ul1.purchase_date, ul1.rent_end_date " +
-                "FROM USER_LIBRARY_R1 ul1, USER_LIBRARY_R2 ul2, VIDEO v, STORE_USER u " +
+                "FROM USER_LIBRARY_R1 ul1, USER_LIBRARY_R2 ul2, VIDEO_R1 v, STORE_USER u " +
                 "WHERE ul2.userID = u.userID " +
                 "AND ul1.transactionID = ul1.transactionID " +
                 "AND ul2.userID = 100 " +
