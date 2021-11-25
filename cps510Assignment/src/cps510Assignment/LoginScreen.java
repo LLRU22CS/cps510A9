@@ -93,14 +93,17 @@ public class LoginScreen extends Screen {
 //            loginStmt = conn1.prepareStatement("SELECT user_password FROM STORE_USER WHERE username = ?");
 //            loginStmt.setString(1, un.getText());
 //            rs = loginStmt.executeQuery();
-            String loginQuery = "SELECT user_password FROM STORE_USER WHERE username = '" + un.getText() + "'";
+            String loginQuery = "SELECT user_password, userID FROM STORE_USER WHERE username = '" + un.getText() + "'";
             rs = stmtL.executeQuery(loginQuery);
 
             if (rs.next()) {
                 String expected_pw = rs.getString("user_password");
+                int curUserID = rs.getInt("userID");
                 if (!pw.getText().equals(expected_pw)) {
                     AlertBox.display("Error", "Username/Password incorrect.");
                 } else {
+                    // get the userID from the username, and set it to the global variable
+                    Main.userID = curUserID;
                     result = true;
                 }
             } else {

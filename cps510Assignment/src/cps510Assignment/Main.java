@@ -52,7 +52,7 @@ public class Main extends Application implements EventHandler<ActionEvent> {
     final static int WIN_WIDTH = 800, WIN_HEIGHT = 600;
     private Stage window;
     private HashMap<String, Screen> allScenes = new HashMap<>();
-    static String username = null;
+    public static int userID = -1;
     Scene entryPortal, newUser, login, adminLogin, homePage, adminHomePage, practiceQueries;
 	
     @Override

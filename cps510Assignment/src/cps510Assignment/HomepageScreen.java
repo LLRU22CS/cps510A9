@@ -60,7 +60,10 @@ public class HomepageScreen extends Screen {
         hpGrid.setVgap(15);
         hpGrid.setHgap(15);
         Button hpButton1 = new Button("Sign Out");
-        hpButton1.setOnAction(e -> this.switchScene("EntryPortalScreen.java"));
+        hpButton1.setOnAction(e -> {
+            Main.userID = -1;
+            this.switchScene("EntryPortalScreen.java");
+        });
         Button hpButton2 = new Button("Wishlist");
         hpButton2.setOnAction(e -> this.switchScene("WishlistScreen.java"));
         Button hpButton3 = new Button("Shopping Cart");
