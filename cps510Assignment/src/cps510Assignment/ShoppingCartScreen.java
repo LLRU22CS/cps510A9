@@ -1,5 +1,6 @@
 package cps510Assignment;
 
+import static cps510Assignment.Screen.WIN_WIDTH;
 import java.util.HashMap;
 import java.util.ArrayList;
 import javafx.geometry.Insets;
@@ -39,9 +40,9 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Font;
 import javafx.stage.Stage;
-/**
- *
+ /*
  * @author david
  */
 public class ShoppingCartScreen extends Screen{
@@ -52,12 +53,34 @@ public class ShoppingCartScreen extends Screen{
     
     @Override
     public Scene getScene() {
-        
-       TableView shoppingcartTable = new TableView();
+       final Label sclabel = new Label("Shopping Cart");
+       sclabel.setFont(new Font("Arial", 20));
+       Button backButton1 = new Button("Back to Home");
+       backButton1.setOnAction(e -> this.switchScene("HomepageScreen.java"));
+       TableView scTable = new TableView();
        
        
-        
-        return new Scene(shoppingcartTable, WIN_WIDTH, WIN_HEIGHT);
+       TableColumn MovieNameCol = new TableColumn("Movie");
+       TableColumn DirectorCol = new TableColumn("Director");
+       TableColumn release_yearCol = new TableColumn("Release Year");
+       TableColumn priceCol = new TableColumn("Price");
+       TableColumn pointsCol = new TableColumn("Points");
+       
+       
+       scTable.setPlaceholder(new Label("No rows to display"));
+       scTable.setColumnResizePolicy( TableView.CONSTRAINED_RESIZE_POLICY );
+        MovieNameCol.setMaxWidth( 1f * Integer.MAX_VALUE * 30 ); 
+        DirectorCol.setMaxWidth( 1f * Integer.MAX_VALUE * 20 );
+        release_yearCol.setMaxWidth( 1f * Integer.MAX_VALUE * 20 );
+        priceCol.setMaxWidth( 1f * Integer.MAX_VALUE * 15 );
+        pointsCol.setMaxWidth( 1f * Integer.MAX_VALUE * 15 );
+
+       scTable.getColumns().addAll(MovieNameCol, DirectorCol, release_yearCol, priceCol, pointsCol);
+        final VBox scbox = new VBox();
+        scbox.setSpacing(5);
+        scbox.setPadding(new Insets(20, 10, 10, 20));
+        scbox.getChildren().addAll(sclabel, scTable, backButton1);
+        return new Scene(scbox, WIN_WIDTH, WIN_HEIGHT);
      }
     
     

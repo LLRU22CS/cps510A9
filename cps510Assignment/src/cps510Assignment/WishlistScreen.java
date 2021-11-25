@@ -5,6 +5,7 @@
  */
 package cps510Assignment;
 
+import static cps510Assignment.Screen.WIN_WIDTH;
 import java.util.HashMap;
 import java.util.ArrayList;
 import javafx.geometry.Insets;
@@ -44,6 +45,7 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Font;
 import javafx.stage.Stage;
 /**
  *
@@ -57,12 +59,29 @@ public class WishlistScreen extends Screen{
     
     @Override
     public Scene getScene() {
-        
+       final Label wlabel = new Label("Wishlist");
+       wlabel.setFont(new Font("Arial", 20));
+       Button backButton1 = new Button("Back to Home");
+       backButton1.setOnAction(e -> this.switchScene("HomepageScreen.java"));
        TableView wishlistTable = new TableView();
        
        
-        
-        return new Scene(wishlistTable, WIN_WIDTH, WIN_HEIGHT);
+       TableColumn MovieNameCol = new TableColumn("Movie");
+       TableColumn DirectorCol = new TableColumn("Director");
+       TableColumn release_yearCol = new TableColumn("Release Year");
+       
+       wishlistTable.setPlaceholder(new Label("No rows to display"));
+       wishlistTable.setColumnResizePolicy( TableView.CONSTRAINED_RESIZE_POLICY );
+        MovieNameCol.setMaxWidth( 1f * Integer.MAX_VALUE * 40 ); 
+        DirectorCol.setMaxWidth( 1f * Integer.MAX_VALUE * 30 );
+        release_yearCol.setMaxWidth( 1f * Integer.MAX_VALUE * 30 );
+
+       wishlistTable.getColumns().addAll(MovieNameCol, DirectorCol, release_yearCol);
+        final VBox wishbox = new VBox();
+        wishbox.setSpacing(5);
+        wishbox.setPadding(new Insets(20, 10, 10, 20));
+        wishbox.getChildren().addAll(wlabel, wishlistTable, backButton1);
+        return new Scene(wishbox, WIN_WIDTH, WIN_HEIGHT);
      }
     
     
