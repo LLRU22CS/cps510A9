@@ -5,7 +5,6 @@
  */
 package cps510Assignment;
 
-import static cps510Assignment.Screen.WIN_WIDTH;
 import java.util.HashMap;
 import java.util.ArrayList;
 import javafx.geometry.Insets;
@@ -59,24 +58,69 @@ public class WishlistScreen extends Screen{
     
     @Override
     public Scene getScene() {
-       final Label wlabel = new Label("Wishlist");
-       wlabel.setFont(new Font("Arial", 20));
-       Button backButton1 = new Button("Back to Home");
-       backButton1.setOnAction(e -> this.switchScene("HomepageScreen.java"));
-       TableView wishlistTable = new TableView();
-       
-       
-       TableColumn MovieNameCol = new TableColumn("Movie");
-       TableColumn DirectorCol = new TableColumn("Director");
-       TableColumn release_yearCol = new TableColumn("Release Year");
-       
-       wishlistTable.setPlaceholder(new Label("No rows to display"));
-       wishlistTable.setColumnResizePolicy( TableView.CONSTRAINED_RESIZE_POLICY );
+        final Label wlabel = new Label("Wishlist");
+        wlabel.setFont(new Font("Arial", 20));
+        Button backButton1 = new Button("Back to Home");
+        backButton1.setOnAction(e -> this.switchScene("HomepageScreen.java"));
+        TableView wishlistTable = new TableView();
+
+
+        TableColumn MovieNameCol = new TableColumn("Movie");
+        TableColumn DirectorCol = new TableColumn("Director");
+        TableColumn release_yearCol = new TableColumn("Release Year");
+        
+        MovieNameCol.setCellValueFactory(new PropertyValueFactory<>("title"));
+        DirectorCol.setCellValueFactory(new PropertyValueFactory<>("director"));
+        release_yearCol.setCellValueFactory(new PropertyValueFactory<>("releaseYear"));
+        
+        ArrayList<Video> videos = new ArrayList<>();
+        
+        // try to grab the wishlist items here
+        try (Statement stmt = conn1.createStatement()) {
+            ResultSet rs = stmt.executeQuery("SELECT videoID FROM WISHLIST WHERE userID = '" + Main.userID + "'");
+            ArrayList<Integer> videoIDs = new ArrayList<>();
+            
+            while (rs.next()) {
+                int videoID = rs.getInt("videoID");
+                videoIDs.add(videoID);
+            }
+            
+            for (int videoID : videoIDs) {
+                rs = stmt.executeQuery("SELECT * FROM VIDEO_R1 v1, VIDEO_R2 v2 WHERE v1.videoID = '" + videoID + "' AND v1.videoID = v2.videoID");
+                
+                while (rs.next()) {
+                    String title = rs.getString("title");
+                    int releaseYear = rs.getInt("release_year");
+                    String director = rs.getString("director");
+                    double videoDuration = rs.getDouble("video_duration");
+                    String rating = rs.getString("rating");
+                    String description = rs.getString("video_description");
+                    double purchasePrice = rs.getDouble("purchase_price");
+
+                    Video v = new Video(videoID, title, releaseYear, director, videoDuration, rating, description, purchasePrice);
+                    videos.add(v);
+                }
+            }
+            
+        } catch (SQLException e) {
+            System.out.println(e);
+        }
+
+        wishlistTable.setColumnResizePolicy( TableView.CONSTRAINED_RESIZE_POLICY );
         MovieNameCol.setMaxWidth( 1f * Integer.MAX_VALUE * 40 ); 
         DirectorCol.setMaxWidth( 1f * Integer.MAX_VALUE * 30 );
         release_yearCol.setMaxWidth( 1f * Integer.MAX_VALUE * 30 );
 
-       wishlistTable.getColumns().addAll(MovieNameCol, DirectorCol, release_yearCol);
+        wishlistTable.getColumns().addAll(MovieNameCol, DirectorCol, release_yearCol);
+        
+        if (videos.isEmpty()) {
+            wishlistTable.setPlaceholder(new Label("No rows to display"));
+        } else {
+            for (Video v : videos) {
+                wishlistTable.getItems().add(v);
+            }
+        }
+        
         final VBox wishbox = new VBox();
         wishbox.setSpacing(5);
         wishbox.setPadding(new Insets(20, 10, 10, 20));
