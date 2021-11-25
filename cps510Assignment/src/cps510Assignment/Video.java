@@ -19,7 +19,7 @@ public class Video {
     private String rating;
     private String description;
     private double purchasePrice;
-    private double points = 0.0;
+    private int points;
     
     public Video(
             int videoID,
@@ -39,31 +39,13 @@ public class Video {
         this.rating = rating;
         this.description = description;
         this.purchasePrice = purchasePrice;
-        
+        if (this.purchasePrice > 12) this.points = 30;
+        else if (this.purchasePrice > 9) this.points = 20;
+        else if (this.purchasePrice > 6) this.points = 10;
+        else if (this.purchasePrice > 3) this.points = 6;
+        else this.points = 3;
     }
     
-    public Video(
-            int videoID,
-            String title,
-            int releaseYear,
-            String director,
-            double videoDuration,
-            String rating,
-            String description,
-            double purchasePrice,
-            double points) {
-        
-        this.videoID = videoID;
-        this.title = title;
-        this.releaseYear = releaseYear;
-        this.director = director;
-        this.videoDuration = videoDuration;
-        this.rating = rating;
-        this.description = description;
-        this.purchasePrice = purchasePrice;
-        this.points = points;
-        
-    }
 
     public int getVideoID() {
         return videoID;
@@ -97,7 +79,7 @@ public class Video {
         return purchasePrice;
     }
 
-    public double getPoints() {
+    public int getPoints() {
         return points;
     }
     

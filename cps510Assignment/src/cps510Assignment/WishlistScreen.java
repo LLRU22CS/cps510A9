@@ -62,6 +62,8 @@ public class WishlistScreen extends Screen{
         wlabel.setFont(new Font("Arial", 20));
         Button backButton1 = new Button("Back to Home");
         backButton1.setOnAction(e -> this.switchScene("HomepageScreen.java"));
+        Button deleterowButton = new Button("Remove Selected Movie");
+        Button addToscButton = new Button("Add Selected Movie to Shopping Cart");
         TableView wishlistTable = new TableView();
 
 
@@ -113,6 +115,25 @@ public class WishlistScreen extends Screen{
 
         wishlistTable.getColumns().addAll(MovieNameCol, DirectorCol, release_yearCol);
         
+        deleterowButton.setOnAction(e -> 
+            {
+                int selectedIndex = wishlistTable.getSelectionModel().getSelectedIndex();
+                wishlistTable.getItems().removeAll(wishlistTable.getSelectionModel().getSelectedItem());
+                int selectedVideoID = videos.get(selectedIndex).getVideoID();
+                deleteQuery(selectedVideoID);
+            });
+        
+        addToscButton.setOnAction(e -> 
+            {
+                int selectedIndex = wishlistTable.getSelectionModel().getSelectedIndex();
+                wishlistTable.getItems().removeAll(wishlistTable.getSelectionModel().getSelectedItem());
+                int selectedVideoID = videos.get(selectedIndex).getVideoID();
+                double selectedprice = videos.get(selectedIndex).getPurchasePrice();
+                int selectedpoints = videos.get(selectedIndex).getPoints();
+                deleteQuery(selectedVideoID);
+                addTosc(selectedVideoID, selectedprice, selectedpoints);
+            });
+        
         if (videos.isEmpty()) {
             wishlistTable.setPlaceholder(new Label("No rows to display"));
         } else {
@@ -124,9 +145,25 @@ public class WishlistScreen extends Screen{
         final VBox wishbox = new VBox();
         wishbox.setSpacing(5);
         wishbox.setPadding(new Insets(20, 10, 10, 20));
-        wishbox.getChildren().addAll(wlabel, wishlistTable, backButton1);
+        wishbox.getChildren().addAll(wlabel, wishlistTable, addToscButton, deleterowButton, backButton1);
         return new Scene(wishbox, WIN_WIDTH, WIN_HEIGHT);
      }
     
+    private void deleteQuery(int videoid){
+        try(Statement stmt = conn1.createStatement()){
+            stmt.executeQuery("DELETE FROM WISHLIST WHERE userID = '" + Main.userID + "' AND videoID = '" + videoid + "'");
+        }catch (SQLException e){
+            System.out.println(e);
+            
+        }
+    }
     
+    private void addTosc(int videoid, double price, int points){
+        try(Statement stmt = conn1.createStatement()){
+            stmt.executeQuery("INSERT INTO SHOPPING_CART VALUES ('" + Main.userID + "','" + videoid + "'," +price+ ","+points+")");
+        }catch (SQLException e){
+            System.out.println(e);
+            
+        }
+    }
 }
