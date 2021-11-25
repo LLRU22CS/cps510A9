@@ -71,6 +71,7 @@ public class Main extends Application implements EventHandler<ActionEvent> {
         UnixScreen unixScreen = new UnixScreen(window, allScenes);
         WishlistScreen wishlistScreen = new WishlistScreen(window, allScenes);
         ShoppingCartScreen shoppingcartScreen = new ShoppingCartScreen(window, allScenes);
+        VideoViewScreen videoViewScreen = new VideoViewScreen(window, allScenes);
         
         // add all scenes to global HashMap
         allScenes.put("AdminLoginScreen.java", adminLoginScreen);
@@ -82,6 +83,7 @@ public class Main extends Application implements EventHandler<ActionEvent> {
         allScenes.put("UnixScreen.java", unixScreen);
         allScenes.put("WishlistScreen.java", wishlistScreen);
         allScenes.put("ShoppingCartScreen.java", shoppingcartScreen);
+        allScenes.put("VideoViewScreen.java", videoViewScreen);
 
         // start initial scene
         window.setScene(entryPortalScreen.getScene());
