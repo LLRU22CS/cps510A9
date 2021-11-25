@@ -73,7 +73,10 @@ public class LoginScreen extends Screen {
         Button return_to_ep_button = new Button("Back");
         return_to_ep_button.setOnAction(e -> this.switchScene("EntryPortalScreen.java"));
         Button buttonNew = new Button("Bypass");
-        buttonNew.setOnAction(e -> this.switchScene("HomepageScreen.java"));
+        buttonNew.setOnAction(e -> {
+        	Main.userID = 100;
+        	this.switchScene("HomepageScreen.java");
+        });
         GridPane.setConstraints(username, 0, 0);
         GridPane.setConstraints(password, 0, 1);
         GridPane.setConstraints(username_text, 1, 0);
