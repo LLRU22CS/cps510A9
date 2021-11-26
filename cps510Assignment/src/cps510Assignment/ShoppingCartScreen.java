@@ -77,30 +77,29 @@ public class ShoppingCartScreen extends Screen{
         
         // try to grab the wishlist items here
         try (Statement stmt = conn1.createStatement()) {
-            ResultSet rs = stmt.executeQuery("SELECT videoID, points FROM SHOPPING_CART WHERE userID = '" + Main.userID + "'");
+            ResultSet rs = stmt.executeQuery("SELECT videoID, total_price FROM SHOPPING_CART WHERE userID = '" + Main.userID + "'");
             HashMap<Integer, Double> videoPoints = new HashMap<>();
             
             while (rs.next()) {
                 int videoID = rs.getInt("videoID");
-                double points = rs.getDouble("points");
-                videoPoints.put(videoID, points);
+                double price = rs.getDouble("total_price");
+                videoPoints.put(videoID, price);
             }
             
             for (int videoID : videoPoints.keySet()) {
-                double points = videoPoints.get(videoID);
+                double price = videoPoints.get(videoID);
                 
                 rs = stmt.executeQuery("SELECT * FROM VIDEO_R1 v1, VIDEO_R2 v2 WHERE v1.videoID = '" + videoID + "' AND v1.videoID = v2.videoID");
                 
-                while (rs.next()) {
+                if (rs.next()) {
                     String title = rs.getString("title");
                     int releaseYear = rs.getInt("release_year");
                     String director = rs.getString("director");
                     double videoDuration = rs.getDouble("video_duration");
                     String rating = rs.getString("rating");
                     String description = rs.getString("video_description");
-                    double purchasePrice = rs.getDouble("purchase_price");
 
-                    Video v = new Video(videoID, title, releaseYear, director, videoDuration, rating, description, purchasePrice);
+                    Video v = new Video(videoID, title, releaseYear, director, videoDuration, rating, description, price);
                     videos.add(v);
                 }
             }

@@ -59,7 +59,7 @@ public class VideoViewScreen extends Screen {
 		videoReviewGrid.setVgap(3);
 		videoReviewGrid.setHgap(5);
 		int videoID = Data.videoID;
-		Button addToCartPurchaseButton = new Button("Add to cart");
+		Button addToCartPurchaseButton = new Button("Purchase");
 		Button addToWishlistButton = new Button("Add to wishlist");
 		Button leaveReviewButton = new Button("Post");
 		Button backButton = new Button("Back");
@@ -93,7 +93,7 @@ public class VideoViewScreen extends Screen {
                 title.setText(videoResult.getString("title"));
                 year.setText(String.valueOf(videoResult.getInt("release_year")));    
                 director.setText(videoResult.getString("director"));    
-                duration.setText(String.valueOf(videoResult.getInt("video_duration")));    
+                duration.setText(String.valueOf(videoResult.getInt("video_duration")) + " minutes");    
                 rating.setText(videoResult.getString("rating"));    
                 purchasePrice = videoResult.getDouble("purchase_price");
                 if (videoResult.wasNull()) {
@@ -121,16 +121,41 @@ public class VideoViewScreen extends Screen {
 		videoViewGrid.add(backButton, 3, 0);
       	videoViewGrid.add(year, 0, 1);
       	videoViewGrid.add(director, 0, 2);
-      	videoViewGrid.add(rating, 1, 1);
-      	videoViewGrid.add(duration, 1, 2);
+      	videoViewGrid.add(rating, 2, 0);
+      	videoViewGrid.add(duration, 0, 3);
       	if (purchaseable) {
       		videoViewGrid.add(price, 2, 1);
+      		videoViewGrid.add(addToCartPurchaseButton, 3, 1);
       	}
-      	videoViewGrid.add(description, 0, 3, 4, 3);
-      	videoViewGrid.add(addToCartPurchaseButton, 0, 6);
-      	videoViewGrid.add(addToWishlistButton, 1, 6);
+      	videoViewGrid.add(description, 0, 5, 4, 3);
+      	videoViewGrid.add(addToWishlistButton, 0, 8);
       	
-      	int maxActors = 0, y = 7;
+      	int y = 2;
+      	try (Statement rentalStmt = conn1.createStatement()) {
+            String rentalQuery = "SELECT rental_duration, rental_price FROM rental_duration WHERE videoID = " + String.valueOf(videoID);
+            ResultSet rentalResult = rentalStmt.executeQuery(rentalQuery);
+            while(rentalResult.next() && y < 5) {
+            	Label p = new Label();
+            	Button b = new Button();
+            	int nights = rentalResult.getInt("rental_duration");
+            	double rentPrice = rentalResult.getDouble("rental_price");
+            	if (nights < 3) b.setText(String.valueOf(nights*24) + " hours");
+            	else b.setText(String.valueOf(nights) + " days");
+            	p.setText("Rent: $" + String.valueOf(rentPrice));
+            	b.setOnAction(e -> {
+        			addToCart(Main.userID, videoID, rentPrice);
+        			AlertBox.display("Success", title.getText() + " was added to your cart.");
+            	});
+            	videoViewGrid.add(p, 2, y);
+            	videoViewGrid.add(b, 3, y);
+            	y++;
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getErrorCode());
+        }
+      	
+      	int maxActors = 0;
+      	y = 9;
       	try (Statement actorStmt = conn1.createStatement()) {
             String actorQuery = "SELECT actor_first_name, actor_last_name, character_name FROM actors WHERE videoID = " + String.valueOf(videoID);
             ResultSet actorResult = actorStmt.executeQuery(actorQuery);
@@ -163,13 +188,16 @@ public class VideoViewScreen extends Screen {
 
         leaveReviewButton.setOnAction(e -> {
         	PreparedStatement addReviewStmt = null;
+        	String r = review.getText();
+        	String t = reviewTitle.getText();
+        	if (r.equals(null) || t.equals(null)) return;
             try {
             	addReviewStmt = conn1.prepareStatement("INSERT INTO review (userID, videoID, review, rating, rtitle) values (?, ?, ?, ?, ?)");
             	addReviewStmt.setInt(1, Main.userID);
             	addReviewStmt.setInt(2, videoID);
-            	addReviewStmt.setString(3, review.getText());
+            	addReviewStmt.setString(3, r);
             	addReviewStmt.setDouble(4, round(reviewValue.getValue(), 1));
-            	addReviewStmt.setString(5, reviewTitle.getText());
+            	addReviewStmt.setString(5, t);
             	addReviewStmt.executeUpdate();
             } catch (SQLException a) {
             	AlertBox.display("Unable to Post", "You have already added a review for this movie.");
