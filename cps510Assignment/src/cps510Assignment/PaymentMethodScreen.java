@@ -41,6 +41,8 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
+import java.text.DateFormat;  
+import java.text.SimpleDateFormat; 
  /*
  * @author david
  */
@@ -54,8 +56,8 @@ public class PaymentMethodScreen extends Screen{
     public Scene getScene() {
         final Label sclabel = new Label("Payment Methods");
         sclabel.setFont(new Font("Arial", 20));
-        Button backButton1 = new Button("Back to Home");
-        backButton1.setOnAction(e -> this.switchScene("HomepageScreen.java"));
+        Button backButton1 = new Button("Back to Profile");
+        backButton1.setOnAction(e -> this.switchScene("ProfileScreen.java"));
         Button addrowButton = new Button("Add Payment Method");
         Button deleterowButton = new Button("Remove Selected Payment Method");
         TableView scTable = new TableView();
@@ -95,7 +97,7 @@ public class PaymentMethodScreen extends Screen{
         }
         
         addrowButton.setOnAction(e -> {
-            
+            addPaymentMethodForm();
         });
         
         deleterowButton.setOnAction(e -> {
@@ -129,9 +131,56 @@ public class PaymentMethodScreen extends Screen{
         return new Scene(scbox, WIN_WIDTH, WIN_HEIGHT);
     }
     
-    private void addQuery() {
+    private void addPaymentMethodForm() {
+        Stage newStage = new Stage();
+        VBox comp = new VBox();
+        TextField cardNumField = new TextField("Card Number");
+        TextField cardTypeField = new TextField("Card Type");
+        TextField cardCVVField = new TextField("Card CVV");
+        DatePicker cardExpField = new DatePicker();
+        TextField firstNameField = new TextField("First Name");
+        TextField lastNameField = new TextField("Last Name");
+        TextField billAdd1Field = new TextField("Address 1");
+        TextField billAdd2Field = new TextField("Address 2");
+        TextField billAddCityField = new TextField("City");
+        TextField billAddStateField = new TextField("State");
+        TextField billAddPCField = new TextField("Postal Code");
+        TextField billAddCountryField = new TextField("Country");
+        
+        Button addPaymentButton = new Button("Add Payment Method");
+        addPaymentButton.setOnAction(e -> {
+            
+            double cardNum = Double.parseDouble(cardNumField.getText());
+            String cardType = cardTypeField.getText();
+            int cardCVV = Integer.parseInt(cardCVVField.getText());
+            Date cardExp = Date.valueOf(cardExpField.getValue());
+            String firstName = firstNameField.getText();
+            String lastName = lastNameField.getText();
+            String billAdd1 = billAdd1Field.getText();
+            String billAdd2 = billAdd2Field.getText();
+            String city = billAddCityField.getText();
+            String state = billAddStateField.getText();
+            String postalCode = billAddPCField.getText();
+            String country = billAddCountryField.getText();
+            
+            addQuery(cardNum, cardType, cardCVV, cardExp, firstName, lastName, billAdd1, billAdd2, city, state, postalCode, country);
+            newStage.close();
+        });
+        
+        comp.getChildren().addAll(cardNumField, cardTypeField, cardCVVField, cardExpField, firstNameField, lastNameField, billAdd1Field, billAdd2Field, billAddCityField, billAddStateField, billAddPCField, billAddCountryField, addPaymentButton);
+
+        Scene stageScene = new Scene(comp, 300, 300);
+        newStage.setScene(stageScene);
+        newStage.show();
+    }
+    
+    private void addQuery(double cardNum, String cardType, int cardCVV, Date cardExp, String firstName, String lastName, String billingAdd1, String billingAdd2, String billingAddCity, String billingAddState, String billingAddPC, String billingAddCountry) {
+        DateFormat dateFormat = new SimpleDateFormat("mm/yyyy");  
+        String strDate = dateFormat.format(cardExp); 
+        
         try (Statement stmt = conn1.createStatement()) {
-            stmt.executeQuery("DELETE FROM SHOPPING_CART WHERE userID = '" + Main.userID + "' AND videoID = '" + videoid + "'");
+            stmt.executeQuery("INSERT INTO PAYMENT_METHOD (`userID`,`card_number`,`card_type`,`card_CVV`,`card_expiry_date`,`cardholder_first_name`,`cardholder_last_name`,`billing_address_1`,`billing_address_2`,`billing_address_city`,`billing_address_state`,`billing_address_postal_code`,`billing_address_country`) " + 
+                    "VALUES (" + Main.userID + "," + cardNum + ",'" + cardType + "'," + cardCVV + ",TO_DATE('" + strDate + "','MM/YYYY'),'" + firstName + "','" + lastName + "','" + billingAdd1 + "','" + billingAdd2 + "','" + billingAddCity + "','" + billingAddState + "','" + billingAddPC + "','" + billingAddCountry + "')");
         } catch (SQLException e){
             System.out.println(e);
         }
