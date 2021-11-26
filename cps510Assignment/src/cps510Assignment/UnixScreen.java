@@ -295,6 +295,26 @@ public class UnixScreen extends Screen {
                 "6475652302, " +
                 "TO_DATE('23/08/1992', 'DD/MM/YYYY')" +
             ")",
+            "INSERT INTO STORE_USER VALUES (" +
+                    "102, " +
+                    "'liam@ryerson.ca', " +
+                    "'lloewen', " +
+                    "'LiamLoewen', " +
+                    "'Liam', " +
+                    "'Loewen', " +
+                    "4445444464, " +
+                    "TO_DATE('01/01/1996', 'DD/MM/YYYY')" +
+                ")",
+                "INSERT INTO STORE_USER VALUES (" +
+                        "103, " +
+                        "'jdoe@ryerson.ca', " +
+                        "'jd69', " +
+                        "'JohnDoe', " +
+                        "'John', " +
+                        "'Doe', " +
+                        "4445888864, " +
+                        "TO_DATE('23/07/1999', 'DD/MM/YYYY')" +
+                    ")",
             "INSERT INTO VIDEO_R1 VALUES (" +
                 "100, " +
                 "'Saving Private Ryan', " +
@@ -399,6 +419,19 @@ public class UnixScreen extends Screen {
                 "'Eight years after the Joker''s reign of anarchy, Batman, with the help of the enigmatic Catwoman, is forced from his exile to save Gotham City from the brutal guerrilla terrorist Bane.'," +
                 "9.99" +
             ")",
+            "INSERT INTO VIDEO_R1 VALUES (" +
+                    "108, " +
+                    "'Django Unchained', " +
+                    "2012," +
+                    "'Quentin Tarantino'" +
+                ")",
+                "INSERT INTO VIDEO_R2 VALUES (" +
+                    "108, " +
+                    "165, " +
+                    "'R', " +
+                    "'With the help of a German bounty-hunter, a freed slave sets out to rescue his wife from a brutal plantation-owner in Mississippi.'," +
+                    "11.99" +
+                ")",
             "INSERT INTO PAYMENT_METHOD VALUES (100, 100, 5555555555554444, 'MASTERCARD', 123, TO_DATE('09/2022', 'MM/YYYY'), 'Jared', 'Fogle', '69 victoria street', NULL, 'Toronto', 'Ontario', 'A1B2C3', 'Canada')",
             "INSERT INTO PAYMENT_METHOD VALUES (101, 100, 4444444444445555, 'MASTERCARD', 456, TO_DATE('09/2023', 'MM/YYYY'), 'Jared', 'Fogle', '69 victoria street', NULL, 'Toronto', 'Ontario', 'A1B2C3', 'Canada')",
             "INSERT INTO PAYMENT_METHOD VALUES (102, 101, 1234567891234567, 'VISA', 789, TO_DATE('10/2021', 'MM/YYYY'), 'Kyrie', 'Irving', '420 yonge street', NULL, 'Toronto', 'Ontario', 'X7Y8Z9', 'Canada')",
@@ -451,6 +484,9 @@ public class UnixScreen extends Screen {
             "INSERT INTO ACTORS VALUES (107, 'Hathaway', 'Anne', 'Selina')",
             "INSERT INTO ACTORS VALUES (107, 'Gordon-Levitt', 'Joseph', 'Blake')",
             "INSERT INTO ACTORS VALUES (107, 'Caine', 'Michael', 'Alfred')",
+            "INSERT INTO ACTORS VALUES (108, 'Foxx', 'Jamie', 'Django')",
+            "INSERT INTO ACTORS VALUES (108, 'DiCaprio', 'Leonardo', 'Calvin Candie')",
+            "INSERT INTO ACTORS VALUES (108, 'Waltz', 'Christoph', 'Dr. King Shultz')",
             "INSERT INTO FILE_LOCATIONS VALUES (100, 'MOVIE', '/videos/movies/MOVIE_100')",
             "INSERT INTO FILE_LOCATIONS VALUES (100, 'THUMBNAIL', '/videos/images/thumbnails/THUMBNAIL_100')",
             "INSERT INTO FILE_LOCATIONS VALUES (102, 'MOVIE', '/videos/categories/adventure/MOVIE_102')",
@@ -498,6 +534,10 @@ public class UnixScreen extends Screen {
             "INSERT INTO REVIEW VALUES (101,100,'Very simple and cliche movie. Could have been better.',2,'Overhyped')",
             "INSERT INTO REVIEW VALUES (101,104,'Epic! Good Watch',5,'GREAT')",
             "INSERT INTO REVIEW VALUES (100,104,'It was alright',5,'OK')",
+            "INSERT INTO REVIEW VALUES (102,	102,	'absolutely iconic story... and who knew the dutch eat mayo with their fries',	4,	'Bad ass')",
+            "INSERT INTO REVIEW VALUES (102,	103,	'This is literally the greatest testament to cinematoraphy that has ever been displayed on a screen. Tommy''s ability to act, direct, and produce blows me away.',	,4.5,	'Holy shit')",
+            "INSERT INTO REVIEW VALUES (100,	103,	'I started crying in the first scene. By the 30th minute I was throwing up and sobbing hysterically. By the time an hour had passed, I had to leave it was TOO good',	5,	'I am blown away')",
+            "INSERT INTO REVIEW VALUES (102,100,'One of my top 10 favourites',4.5,'Epic')",
             "INSERT INTO USER_LIBRARY_R1 VALUES (101,'rent',2,DATE'2021-10-06',DATE'2021-10-08')",
             "INSERT INTO USER_LIBRARY_R1 VALUES (100,'own',0,DATE'2021-10-06',NULL)",
             "INSERT INTO USER_LIBRARY_R2 VALUES (100,101,101)",

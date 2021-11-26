@@ -129,6 +129,25 @@ public class VideoViewScreen extends Screen {
       	videoViewGrid.add(description, 0, 3, 4, 3);
       	videoViewGrid.add(addToCartPurchaseButton, 0, 6);
       	videoViewGrid.add(addToWishlistButton, 1, 6);
+      	
+      	int maxActors = 0, y = 7;
+      	try (Statement actorStmt = conn1.createStatement()) {
+            String actorQuery = "SELECT actor_first_name, actor_last_name, character_name FROM actors WHERE videoID = " + String.valueOf(videoID);
+            ResultSet actorResult = actorStmt.executeQuery(actorQuery);
+            while(actorResult.next() && maxActors < 4) {
+            	Text actor = new Text();
+            	String fn = actorResult.getString("actor_first_name");
+            	String ln = actorResult.getString("actor_last_name");
+            	String cn = actorResult.getString("character_name");
+            	if (maxActors == 0) actor.setText(" With " + fn + " " + ln + " as " + cn);
+            	else actor.setText(" And " + fn + " " + ln + " as " + cn);
+            	videoViewGrid.add(actor, 0, y, 4, 1);
+            	y++;
+            	maxActors++;
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getErrorCode());
+        }
 
       	videoReviewGrid.add(reviewTitle, 0, 0);   
       	videoReviewGrid.add(review, 0, 1, 2, 1);
@@ -141,33 +160,83 @@ public class VideoViewScreen extends Screen {
         ColumnConstraints c3 = new ColumnConstraints();
         c3.setPercentWidth(20);
         videoReviewGrid.getColumnConstraints().addAll(c1,c2,c3);
-    
+
+        leaveReviewButton.setOnAction(e -> {
+        	PreparedStatement addReviewStmt = null;
+            try {
+            	addReviewStmt = conn1.prepareStatement("INSERT INTO review (userID, videoID, review, rating, rtitle) values (?, ?, ?, ?, ?)");
+            	addReviewStmt.setInt(1, Main.userID);
+            	addReviewStmt.setInt(2, videoID);
+            	addReviewStmt.setString(3, review.getText());
+            	addReviewStmt.setDouble(4, round(reviewValue.getValue(), 1));
+            	addReviewStmt.setString(5, reviewTitle.getText());
+            	addReviewStmt.executeUpdate();
+            } catch (SQLException a) {
+            	AlertBox.display("Unable to Post", "You have already added a review for this movie.");
+            }
+            finally {
+               try {
+                  if (addReviewStmt != null) { addReviewStmt.close(); }
+               }
+               catch (Exception a) {
+                  // log this error
+               }
+            }
+        	this.switchScene("VideoViewScreen.java");
+        });
+        
+		GridPane reviewsGrid = new GridPane();
+		reviewsGrid.setPadding(new Insets(0,20,20,20));
+		reviewsGrid.setVgap(3);
+		reviewsGrid.setHgap(5);
+      	y = 0;
+      	try (Statement reviewStmt = conn1.createStatement()) {
+            String reviewQuery = "SELECT rtitle, review, rating, userID FROM review WHERE videoID = " + String.valueOf(videoID);
+            ResultSet reviewResult = reviewStmt.executeQuery(reviewQuery);
+            while(reviewResult.next()) {
+            	Label rT = new Label(reviewResult.getString("rtitle"));
+            	Text rB = new Text(reviewResult.getString("review"));
+            	rB.setWrappingWidth(WIN_WIDTH/2);
+            	Label r = new Label(String.valueOf(reviewResult.getDouble("rating")) + " / 5.0");
+            	int uID = reviewResult.getInt("userID");
+            	String name = "";
+            	try (Statement userStmt = conn1.createStatement()) {
+            		String userQuery = "SELECT first_name, last_name FROM store_user WHERE userID = " + String.valueOf(uID);
+            		ResultSet userResult = userStmt.executeQuery(userQuery);
+            		if (userResult.next()) {
+            			name = userResult.getString("first_name") + " " + userResult.getString("last_name");
+            		}
+            	} catch (SQLException e) {
+            		System.out.println(e.getErrorCode());
+            	}
+            	Label n = new Label(name);
+            	reviewsGrid.add(n, 0, y, 1, 1);
+            	reviewsGrid.add(rT, 1, y, 1, 1);
+            	y++;
+            	reviewsGrid.add(r, 0, y, 1, 1);
+            	reviewsGrid.add(rB, 1, y, 1, 1); 
+            	y+=3;        	
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getErrorCode());
+        }
+        c1.setPercentWidth(30);
+        c2.setPercentWidth(70);
+        reviewsGrid.getColumnConstraints().addAll(c1,c2);
+        
 		vvHBox1.getChildren().addAll(thumbnail, videoViewGrid);
-		vvVBox1.getChildren().addAll(vvHBox1, videoReviewGrid);
+		vvVBox1.getChildren().addAll(vvHBox1, videoReviewGrid, reviewsGrid);
 		vvVBox1.setPadding(new Insets(20,20,20,20));
 		videoViewScroll.setContent(vvVBox1);
 		Scene videoView = new Scene(videoViewScroll, WIN_WIDTH, WIN_HEIGHT);
 		return videoView;
 	}
-//
-//	private void getUserID() {
-//		try (Statement userIDStmt = conn1.createStatement()) {
-//            String userIDQuery = "SELECT userID FROM store_user WHERE username = '" + username + "'";
-//            ResultSet userIDResult = userIDStmt.executeQuery(userIDQuery);
-//            if(userIDResult.next()) {
-//                userID = userIDResult.getInt("userID");    
-//            }
-//        } catch (SQLException e) {
-//            System.out.println(e.getErrorCode());
-//        }
-//	}
 
 	private void addToWishlist(int userID, int videoID) {
 		try (Statement wishlistStmt = conn1.createStatement()) {
             String wishlistQuery = "INSERT INTO wishlist VALUES (" + String.valueOf(userID) + "," + String.valueOf(videoID)  + ")";
             wishlistStmt.executeQuery(wishlistQuery);
         } catch (SQLException e) {
-//            System.out.println(e.getErrorCode());
         	e.printStackTrace();
         }
 	}
@@ -183,9 +252,12 @@ public class VideoViewScreen extends Screen {
             String cartQuery = "INSERT INTO shopping_cart VALUES (" + String.valueOf(userID) + "," + String.valueOf(videoID) + "," + String.valueOf(price) + "," + String.valueOf(points) + ")";
             cartStmt.executeQuery(cartQuery);
         } catch (SQLException e) {
-//            System.out.println(e.getErrorCode());
         	e.printStackTrace();
         }
 	}
 
+	private static double round (double value, int precision) {
+	    int scale = (int) Math.pow(10, precision);
+	    return (double) Math.round(value * scale) / scale;
+	}
 }

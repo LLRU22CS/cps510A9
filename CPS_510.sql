@@ -277,6 +277,8 @@ INSERT INTO VIDEO_R2 VALUES (
     'Eight years after the Joker''s reign of anarchy, Batman, with the help of the enigmatic Catwoman, is forced from his exile to save Gotham City from the brutal guerrilla terrorist Bane.',
     9.99
 );
+INSERT INTO VIDEO_R1 VALUES (108, 'Django Unchained', 2012,'Quentin Tarantino');
+INSERT INTO VIDEO_R2 VALUES (108, 165, 'R', 'With the help of a German bounty-hunter, a freed slave sets out to rescue his wife from a brutal plantation-owner in Mississippi.',11.99);
 INSERT INTO PAYMENT_METHOD VALUES (100, 100, 5555555555554444, 'MASTERCARD', 123, TO_DATE('09/2022', 'MM/YYYY'), 'Jared', 'Fogle', '69 victoria street', NULL, 'Toronto', 'Ontario', 'A1B2C3', 'Canada');
 INSERT INTO PAYMENT_METHOD VALUES (101, 100, 4444444444445555, 'MASTERCARD', 456, TO_DATE('09/2023', 'MM/YYYY'), 'Jared', 'Fogle', '69 victoria street', NULL, 'Toronto', 'Ontario', 'A1B2C3', 'Canada');
 INSERT INTO PAYMENT_METHOD VALUES (102, 101, 1234567891234567, 'VISA', 789, TO_DATE('10/2021', 'MM/YYYY'), 'Kyrie', 'Irving', '420 yonge street', NULL, 'Toronto', 'Ontario', 'X7Y8Z9', 'Canada');
@@ -321,6 +323,9 @@ INSERT INTO ACTORS VALUES (107, 'Bale', 'Christian', 'Bruce Wayne');
 INSERT INTO ACTORS VALUES (107, 'Hathaway', 'Anne', 'Selina');
 INSERT INTO ACTORS VALUES (107, 'Gordon-Levitt', 'Joseph', 'Blake');
 INSERT INTO ACTORS VALUES (107, 'Caine', 'Michael', 'Alfred');
+            INSERT INTO ACTORS VALUES (108, 'Foxx', 'Jamie', 'Django');
+            INSERT INTO ACTORS VALUES (108, 'DiCaprio', 'Leonardo', 'Calvin Candie');
+            INSERT INTO ACTORS VALUES (108, 'Waltz', 'Christoph', 'Dr. King Shultz');
 INSERT INTO FILE_LOCATIONS VALUES (100, 'MOVIE', '/videos/movies/MOVIE_100');
 INSERT INTO FILE_LOCATIONS VALUES (100, 'THUMBNAIL', '/videos/images/thumbnails/THUMBNAIL_100');
 INSERT INTO FILE_LOCATIONS VALUES (102, 'MOVIE', '/videos/categories/adventure/MOVIE_102');
@@ -376,6 +381,7 @@ INSERT INTO USER_LIBRARY_R2 VALUES (101,100,100);
 -- all video titles
 SELECT title FROM VIDEO_R1;
 
+select * from review;
 -- actors from Inglorious Basterds
 SELECT actor_first_name, actor_last_name
     FROM VIDEO_R1 v, ACTORS a
