@@ -66,10 +66,14 @@ public class HomepageScreen extends Screen {
         	Main.userID = -1;
         	this.switchScene("EntryPortalScreen.java");
         });
+        
         Button hpButton2 = new Button("Wishlist");
         hpButton2.setOnAction(e -> this.switchScene("WishlistScreen.java"));
         Button hpButton3 = new Button("Shopping Cart");
         hpButton3.setOnAction(e -> this.switchScene("ShoppingCartScreen.java"));
+        Button hpButton4 = new Button("Profile");
+        hpButton4.setOnAction(e -> this.switchScene("ProfileScreen.java"));
+        
         ScrollPane hpScrollPane_Grid = new ScrollPane();
         hpScrollPane_Grid.setPannable(true);
         hpScrollPane_Grid.hbarPolicyProperty().setValue(ScrollPane.ScrollBarPolicy.NEVER);
@@ -130,7 +134,8 @@ public class HomepageScreen extends Screen {
         hpGrid.add(hpButton1, 0, 0);
         hpGrid.add(hpButton2, 2, 0);
         hpGrid.add(hpButton3, 3, 0);
-        hpGrid.add(hpScrollPane_Grid, 0, 1, 4, 1);
+        hpGrid.add(hpButton4, 4, 0);
+        hpGrid.add(hpScrollPane_Grid, 0, 1, 5, 1);
 //        hpGrid.getChildren().addAll(hpLabel1, hpButton1, hpScrollPane_Grid);
         Scene homePage = new Scene(hpGrid, WIN_WIDTH, WIN_HEIGHT);
         hpScrollPane_Grid.setStyle("-fx-focus-color: transparent;");
