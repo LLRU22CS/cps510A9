@@ -91,12 +91,51 @@ public class ProfileScreen extends Screen{
         } catch (SQLException e) {
             System.out.println(e);
         }
-        
-        
+        Label passLabel = new Label("Update Password: ");
+        passLabel.setFont(new Font("Arial", 18));
+        TextField passField = new TextField();
+        passField.setPromptText("New Password");
+        Button passButton = new Button("Update");
+        passButton.setOnAction(e -> {
+        	if (updatePassword(passField)) AlertBox.display("Success", "Password updated");
+        	this.switchScene("ProfileScreen.java");
+        });
+        final HBox passUpdate = new HBox(5);
+        passUpdate.setPadding(new Insets(20, 10, 10, 20));
+        passUpdate.getChildren().addAll(passLabel, passField, passButton);
         final VBox scbox = new VBox();
         scbox.setSpacing(5);
         scbox.setPadding(new Insets(20, 10, 10, 20));
-        scbox.getChildren().addAll(sclabel, backButton1, paymentMethodsButton, emailText, usernameText, firstNameText, lastNameText, phoneNumText, dobText);
+        scbox.getChildren().addAll(sclabel, backButton1, paymentMethodsButton, emailText, usernameText, firstNameText, lastNameText, phoneNumText, dobText, passUpdate);
         return new Scene(scbox, WIN_WIDTH, WIN_HEIGHT);
      }
+
+	private boolean updatePassword(TextField pw) {
+		String s = pw.getText();
+		boolean result = true;
+    	if (s.equals("")) {
+        	AlertBox.display("Unable to Update", "Password must not be empty.");  
+     	   result = false;    
+    	}
+    	PreparedStatement pwStmt = null;
+        try {
+        	pwStmt = conn1.prepareStatement("UPDATE store_user SET user_password = (?) WHERE userID = " + Main.userID);
+        	pwStmt.setString(1, s);
+        	pwStmt.executeUpdate();
+        } catch (SQLException a) {
+        	a.printStackTrace();
+        	AlertBox.display("Unable to Update", "Password not accepted.");
+     	   result = false;
+        }
+        finally {
+           try {
+              if (pwStmt != null) { pwStmt.close(); }
+           }
+           catch (Exception a) {
+              // log this error
+        	   result = false;
+           }
+        }
+        return result;
+	}
 }
