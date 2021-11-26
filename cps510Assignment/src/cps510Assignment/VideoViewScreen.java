@@ -187,10 +187,13 @@ public class VideoViewScreen extends Screen {
         videoReviewGrid.getColumnConstraints().addAll(c1,c2,c3);
 
         leaveReviewButton.setOnAction(e -> {
-        	PreparedStatement addReviewStmt = null;
         	String r = review.getText();
         	String t = reviewTitle.getText();
-        	if (r.equals(null) || t.equals(null)) return;
+        	if (r.equals("") || t.equals("")) {
+            	AlertBox.display("Unable to Post", "Please type a review and a review title.");        		
+        		return;
+        	}
+        	PreparedStatement addReviewStmt = null;
             try {
             	addReviewStmt = conn1.prepareStatement("INSERT INTO review (userID, videoID, review, rating, rtitle) values (?, ?, ?, ?, ?)");
             	addReviewStmt.setInt(1, Main.userID);
